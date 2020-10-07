@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Trivia</title>
+    </head>
+    <header>
+        <div class="logo">
+            Trivia
+        </div>
+    </header>
+    <body>
+        <h2 class="adminLogin">Create Team</h2>
+        <form method="post" action="/post_team">
+            <label for="teamName">Enter team name: </label> <br>
+            <input type="text" name="teamName" placeholder="Trivia Team" required /> <br>
+            <label for="captain">Enter team captain's email address: </label> <br>        
+            <input type="email" name="captain" placeholder="john.doe@email.com" required /> <br>           
+            <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.createTeam()"/>
+        </form>
+    </body>
+</html>

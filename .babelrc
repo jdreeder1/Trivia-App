@@ -1,0 +1,11 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "exclude": ["transform-regenerator"] //prevents "ReferenceError: regeneratorRuntime is not defined" error when testing
+
+            } 
+        ]       
+    ]
+}

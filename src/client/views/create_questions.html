@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Trivia</title>
+    </head>
+    <header>
+        <div class="logo">
+            Trivia
+        </div>
+    </header>
+<body>
+        <form method="post" action="/post_qs">
+			<p>Question 1</p>
+            <textarea class='question' name='q1'></textarea>
+            <select name="correct1">
+				<option value="a">A</option>
+				<option value="b">B</option>
+				<option value="c">C</option>
+				<option value="d">D</option>
+			</select> 
+			<input type='text' name='option1' class='answer'>
+			<input type='text' name='option2' class='answer'>
+			<input type='text' name='option3' class='answer'>
+			<input type='text' name='option4' class='answer'>
+			<br>
+			<p>Question 2</p>
+			<textarea class='question' name='q2'></textarea>
+            <select name="correct2">
+				<option value="a">A</option>
+				<option value="b">B</option>
+				<option value="c">C</option>
+				<option value="d">D</option>
+			</select> 
+			<input type='text' name='option1_q2' class='answer'>
+			<input type='text' name='option2_q2' class='answer'>
+			<input type='text' name='option3_q2' class='answer'>
+			<input type='text' name='option4_q2' class='answer'>
+			<br>
+			<p>Question 3</p>
+			<textarea class='question' name='q3'></textarea>
+            <select name="correct3">
+				<option value="a">A</option>
+				<option value="b">B</option>
+				<option value="c">C</option>
+				<option value="d">D</option>
+			</select> 
+			<input type='text' name='option1_q3' class='answer'>
+			<input type='text' name='option2_q3' class='answer'>
+			<input type='text' name='option3_q3' class='answer'>
+			<input type='text' name='option4_q3' class='answer'>
+            <br>
+            <!--
+			<p>Question 4</p>
+			<textarea class='question' name='q4'></textarea>
+            <input type='text' name='answer4' class='answer'>
+			<br>
+			<p>Question 5</p>
+			<textarea class='question' name='q5'></textarea>
+            <input type='text' name='answer5' class='answer'>
+			<br>
+			<p>Question 6</p>
+			<textarea class='question' name='q6'></textarea>
+            <input type='text' name='answer6' class='answer'>
+			<br>
+			<p>Question 7</p>
+			<textarea class='question' name='q7'></textarea>
+            <input type='text' name='answer7' class='answer'>
+			<br>
+			<p>Question 8</p>
+			<textarea class='question' name='q8'></textarea>
+            <input type='text' name='answer8' class='answer'>
+			<br>
+			<p>Question 9</p>
+			<textarea class='question' name='q9'></textarea>
+            <input type='text' name='answer9' class='answer'>
+			<br>
+			<p>Question 10</p>
+			<textarea class='question' name='q10'></textarea>
+            <input type='text' name='answer10' class='answer'>
+			<br>
+			<p>Question 11</p>
+			<textarea class='question' name='q11'></textarea>
+            <input type='text' name='answer11' class='answer'>
+			<br>
+			<p>Question 12</p>
+			<textarea class='question' name='q12'></textarea>
+            <input type='text' name='answer12' class='answer'>
+			<br>
+			<p>Question 13</p>
+			<textarea class='question' name='q13'></textarea>
+            <input type='text' name='answer13' class='answer'>
+			<br>
+			<p>Question 14</p>
+			<textarea class='question' name='q14'></textarea>
+            <input type='text' name='answer14' class='answer'>
+			<br>
+			<p>Question 15</p>
+			<textarea class='question' name='q15'></textarea>
+            <input type='text' name='answer15' class='answer'>
+			<br>
+			<p>Question 16</p>
+			<textarea class='question' name='q16'></textarea>
+            <input type='text' name='answer16' class='answer'>
+			<br>
+			<p>Question 17</p>
+			<textarea class='question' name='q17'></textarea>
+            <input type='text' name='answer17' class='answer'>
+			<br>
+			<p>Question 18</p>
+			<textarea class='question' name='q18'></textarea>
+            <input type='text' name='answer18' class='answer'>
+			<br>
+			<p>Question 19</p>
+			<textarea class='question' name='q19'></textarea>
+            <input type='text' name='answer19' class='answer'>
+			<br>
+			<p>Question 20</p>
+			<textarea class='question' name='q20'></textarea>
+            <input type='text' name='answer20' class='answer'>
+			<br>
+			<p>Question 21</p>
+			<textarea class='question' name='q21'></textarea>
+            <input type='text' name='answer21' class='answer'>
+			<br>
+			<p>Question 22</p>
+			<textarea class='question' name='q22'></textarea>
+            <input type='text' name='answer22' class='answer'>
+			<br>
+			<p>Question 23</p>
+			<textarea class='question' name='q23'></textarea>
+            <input type='text' name='answer23' class='answer'>
+			<br>
+			<p>Question 24</p>
+			<textarea class='question' name='q24'></textarea>
+            <input type='text' name='answer24' class='answer'>
+			<br>
+			<p>Question 25</p>
+			<textarea class='question' name='q25'></textarea>
+            <input type='text' name='answer25' class='answer'>
+            <br>
+            -->
+			<input type="submit" name="sub" id="sub" value="Submit" onsubmit="handleSubmit();"><br>
+        </form>
+        
+        <script src="../js/formHandler.js"></script>
+</body>

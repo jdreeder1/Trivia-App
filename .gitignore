@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+loginDB.db
+newUserDB.db
+questionDB.db
+teamDB.db

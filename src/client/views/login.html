@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Trivia</title>
+    </head>
+    <header>
+        <div class="logo">
+            Trivia
+        </div>
+        
+    </header>
+    <body>
+        <section>
+            <!--send email notifying when a user wants to create an account
+            email id associated with preferred team in nedb if approved
+        for login page, require user to input email on file and team id they should've received via email-->
+                <h2 class="userCreate">Create Player Account</h2>
+            <form class="createForm" method="post" action="/validate">
+                <label for="firstName">First Name</label><br>
+                <input type="text" name="firstName" class="firstName" placeholder="John" required/><br>
+                <label for="lastName">Last Name</label><br>
+                <input type="text" name="lastName" class="lastName" placeholder="Doe" required/><br>
+                <label for="team">Preferred Team</label><br>
+                <input type="text" name="team" class="team" placeholder="The Best Trivia Team" required/><br>
+                <label for="email">Email Address</label><br>
+                <input type="email" name="email" class="email" placeholder="john.doe@email.com" required/><br><br>
+              <input type="submit" value="Submit" onsubmit="return Client.handleCreate()"/>
+            </form>
+        </section>
+        <main> 
+            <h2 class="loginSection">Login</h2>
+            <a href="create_teams.html"><button class="userLogin">Login as Player</button></a><br><br>
+            <a href="admin_login.html"><button class="adminLogin">Login as Administrator</button></a> <br><br>
+        </main>
+    </body>
+</html>
