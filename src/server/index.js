@@ -46,6 +46,9 @@ teamDatabase.loadDatabase();
 loginDatabase.loadDatabase();
 createUserDatabase.loadDatabase();
 
+//ensures user inputs unique email address
+createUserDatabase.ensureIndex({ fieldName: 'email', unique: true });
+
 const port = Number(process.env.PORT || 3330);
 // designates what port the app will listen to for incoming requests
 app.listen(port, ()=>{
@@ -72,30 +75,153 @@ app.post('/post_team', (req, res) => {
 
     let teamData = {teamName: data.teamName, captain: data.captain};
 
-    teamDatabase.insert(teamData);
+    //make sure team created isn't already in DB, make sure captain email isn't assigned to 2 diff teams
+    teamDatabase.ensureIndex({fieldName: 'teamName', unique: true});
 
-    res.json({
-        status: 'success',
-        info: data
+    teamDatabase.findOne({teamName: data.teamName}, (err, doc) => {
+        if(err){
+            res.send('Error:', err);
+        }
+        else if(doc == null){
+            teamDatabase.insert(teamData); 
+        }
+        else {
+            res.send('Team already exists. Please pick a different team name!');
+        }
     });
+        
+/*
+    teamDatabase.findOne({teamName: data.teamName}, (err, doc) => {
+        if(err){
+            res.send('Error:', err);
+        }
+        else {
+            teamDatabase.insert(teamData);
+            res.json({
+                status: 'success',
+                info: data
+            });
+        }
+    });
+    */
+
 });
 
 app.post('/signin', (req, res) => {
     const data = req.body;
-    loginDatabase.insert(
-        {email: data.email, pw: data.pw, theme: data.theme}
-    );
-//{email: data.email, team: data.pw}
-    createUserDatabase.findOne({_id: data.pw}, (err, doc) => {
-        //
+    //check for captain email first
+    teamDatabase.findOne({captain: data.email}, (err, doc) => {
         if(err){
-            res.send(err);
+            res.send('Error:', err);
+        }
+        //if not a captain, check if player
+        else if(doc == null){
+            createUserDatabase.findOne({email: data.email}, (err, doc) => {
+                if(err){
+                    res.send('Error:', err);
+                }
+                else if(doc == null){
+                    res.send('Email doesn\'t match. Try again!');
+                }
+                //if email matches a player, verify pw matches that player's pw
+                else{
+                    let matchingEmailDoc = doc;
+                    createUserDatabase.findOne({_id: data.pw}, (err, doc) => {
+                        if(err){
+                            res.send('Error:', err);
+                        }
+                        //if pw doesn't match
+                        else if(doc == null){
+                            res.send('Password doesn\'t match. Try again!');
+                        }
+                        else if(matchingEmailDoc.email == doc.email) {
+                            res.send('Thanks for joining, player!');
+                            loginDatabase.insert(
+                                {email: data.email, pw: data.pw, theme: data.theme}
+                            );                            
+                        }
+                        else {
+                            res.send('Password doesn\'t match. Try again!');    
+                        }
+                    });
+                }
+
+            });
+        }
+        //email matches captain, verify pw matches that player's pw
+        else { 
+            let matchingEmailDoc = doc;
+            console.log(matchingEmailDoc);
+            createUserDatabase.findOne({_id: data.pw}, (err, doc) => {
+                if(err){
+                    res.send('Error:', err);
+                }
+                //if pw not found
+                else if(doc == null){
+                    res.send('Password doesn\'t match. Try again!');
+                }
+                //verify pw entered matches captain's pw in newuserdb
+                else if(matchingEmailDoc.captain == doc.email) {
+                    res.send('Thanks for joining, captain!');
+                    loginDatabase.insert(
+                        {email: data.email, pw: data.pw, theme: data.theme}
+                    );                            
+                }
+                //if pw doesn't match                
+                else {
+                    res.send('Password doesn\'t match. Try again!');    
+                }
+            
+            });
+        }
+    });    
+    /*
+    //see if login matches, if not, throw error
+    createUserDatabase.findOne({_id: data.pw}, (err, doc) => {
+        if(err){
+            res.send('Error:', err);
+        }
+        //if pw doesn't match
+        else if(doc == null){
+            res.send('Password doesn\'t match. Try again!');
         }
         else {
-            console.log(`Welcome ${doc.firstName} ${doc.lastName}`);
-            
+            console.log(doc.email);
+            teamDatabase.findOne({captain: data.email}, (err, doc)  => {
+                if(err){
+                    res.send('Error:', err);
+                }
+                //if email doesn't match captain, make sure email matches player
+                else if(doc == null){
+                    createUserDatabase.findOne({email: data.email}, (err, doc) => {
+                        if(err){
+                            res.send('Error:', err);
+                        }
+                        else if(doc == null){
+                            res.send('Email doesn\'t match. Try again!');
+                        }
+                        else { // **BUG** pw and email need to belong to the same player!
+                            res.send('Thanks for joining, player!');
+                            loginDatabase.insert(
+                                {email: data.email, pw: data.pw, theme: data.theme}
+                            );
+                        }
+                    });                    
+                }
+                else {
+                    res.send('Thanks for joining, captain!');
+                    loginDatabase.insert(
+                        {email: data.email, pw: data.pw, theme: data.theme}
+                    );
+                }
+            });               
         }
-    });
+        */
+   
+
+    
+//{email: data.email, team: data.pw}
+
 });
 
 app.post('/validate', (req, res) => {
