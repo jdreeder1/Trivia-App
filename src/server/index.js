@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const Datastore = require('nedb') 
 const nodemailer = require('nodemailer')
+const {MongoClient} = require('mongodb') //use to connect to mongo cluster
 
 const app = express();
 app.use(cors());
@@ -33,7 +34,6 @@ app.get('/create_teams', (req, res) => {
     //res.sendFile{ root: __dirname }
     res.sendFile(`${rootPath}/client/views/create_teams.html`);
 });
-
 
 const questionDatabase = new Datastore('questionDB.db');
 const teamDatabase = new Datastore('teamDB.db');
@@ -250,8 +250,8 @@ app.post('/validate', (req, res) => {
      })
 
     const message = {
-        from: 'woodystrivia@yahoo.com', // Sender address
-        to: 'woodystrivia@yahoo.com',         // List of recipients
+        from: process.env.EMAIL, // Sender address
+        to: process.env.EMAIL,  // List of recipients
         subject: 'New Trivia Account Request', // Subject line
         text: 'A new user would like to join Woody\'s Trivia.' // Plain text body
     };
