@@ -37,6 +37,11 @@ const handleTeams = async () => {
     postData('/signin', formData);
 };
 
+const handleAdmin = async () => {
+    let formData = new FormData(this);
+    postData('', formData);
+};
+
 const handleCreate = async () => {
     //let email = await sendEmail();
     try {    
@@ -54,5 +59,6 @@ export {
     handleSubmit,
     createTeam,
     handleTeams,
+    handleAdmin,
     handleCreate    
  }

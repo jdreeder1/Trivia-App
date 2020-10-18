@@ -7,11 +7,13 @@ import { findZip } from './js/formHandler';
 */
 import { handleCreate } from './js/formHandler';
 import { handleTeams } from './js/formHandler';
+import { handleAdmin } from './js/formHandler';
 
 import './styles/resets.scss'
 
 export {
     handleSubmit,
     handleCreate,
+    handleAdmin,
     handleTeams
 }

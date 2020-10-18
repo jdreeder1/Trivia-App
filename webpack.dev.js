@@ -34,7 +34,9 @@ module.exports = {
         proxy: {
           '/validate': 'http://localhost:3330',
           '/signin': 'http://localhost:3330',
-          '/post_team': 'http://localhost:3330'
+          '/post_team': 'http://localhost:3330',
+          '/admin_signin': 'http://localhost:3330',
+          '/post_qs': 'http://localhost:3330'
         }
       },
     plugins: [

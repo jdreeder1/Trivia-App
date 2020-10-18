@@ -11,9 +11,11 @@
     </header>
     <body>
         <h2 class="adminLogin">Admin Login</h2>
-        <form>
+        <form method="post" action="/admin_signin">
             <label for="adminUsername">Input email</label><br>
             <input class="adminUsername" name="adminUsername" type="email" placeholder="john.doe@gmail.com" required/><br>
+            <label for="admin_pw">Input password </label><br>
+            <input type="password" name="admin_pw" required /><br>
             <label for="secretWord">Select secret word</label><br>
             <select class="secretWord" name="secretWord">
                 <option value="version">version</option>
@@ -27,7 +29,7 @@
                 <option value="science">science</option>
                 <option value="coffee">coffee</option>
             </select><br><br>
-            <input type="submit" class="submitButton" value="Submit"/>
+            <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.handleAdmin()"/>
         </form>
         <p>Create Team or Create Questions?</p>
         <a href="create_team.html"><button>Create Team</button></a> &nbsp; <a href="create_questions.html"><button>Create Questions</button></a>
