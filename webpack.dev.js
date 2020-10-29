@@ -32,11 +32,18 @@ module.exports = {
       devServer: {
           port: 8888,
         proxy: {
+          '/': 'http://localhost:3330',
           '/validate': 'http://localhost:3330',
           '/signin': 'http://localhost:3330',
+          '/user_login': 'http://localhost:3330',
           '/post_team': 'http://localhost:3330',
           '/admin_signin': 'http://localhost:3330',
-          '/post_qs': 'http://localhost:3330'
+          '/post_qs': 'http://localhost:3330',
+          '/get_qs': 'http://localhost:3330',
+          '/questions': 'http://localhost:3330',
+          '/trivia': 'http://localhost:3330',
+          '/create_team': 'http://localhost:3330',
+          '/src/client/styles': 'http://localhost:3330'
         }
       },
     plugins: [

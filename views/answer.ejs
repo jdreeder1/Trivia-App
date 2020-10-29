@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            main {
+                display: grid;
+                grid-template-columns: 1fr 2fr 1fr;
+                grid-template-rows: repeat(5, 100vh);
+                justify-content: center;
+                align-items: center;
+            }
+            section {
+                grid-column: 2;
+            }
+            .question_number, .question_body {
+                text-align: center;
+            }
+             
+            input {
+                text-align: justify;
+                margin-left: 25%;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">
+                Trivia
+            </div>
+        </header>
+    <main>
+        <section>
+            <h1>Answer: </h1>
+            <h2> <%= correctAnswer %> </h2>
+            <h1>Guess: </h1>
+            <h2> <%= guessedAnswer %></h2>
+            <h1>Wager: </h1>
+            <h2> <%= points %></h2>
+            <h3> <%= result %></h3>
+        </section>
+    </main>
+    </body>
+</html>

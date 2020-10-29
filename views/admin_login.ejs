@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Trivia</title>
+    </head>
+    <header>
+        <div class="logo">
+            Trivia
+        </div>
+    </header>
+    <body>
+        <h2 class="adminLogin">Admin Login</h2>
+        <form method="post" action="/admin_signin">
+            <label for="adminUsername">Input email</label><br>
+            <input class="adminUsername" name="adminUsername" type="email" placeholder="john.doe@gmail.com" required/><br>
+            <label for="admin_pw">Input password </label><br>
+            <input type="password" name="admin_pw" required /><br>
+            <label for="secretWord">Select secret word</label><br>
+            <select class="secretWord" name="secretWord">
+                <option value="version">version</option>
+                <option value="oven">oven</option>
+                <option value="hall">hall</option>
+                <option value="tension">tension</option>
+                <option value="tea">tea</option>
+                <option value="studio">studio</option>
+                <option value="failure">failure</option>
+                <option value="college">college</option>
+                <option value="science">science</option>
+                <option value="coffee">coffee</option>
+            </select><br><br>
+            <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.handleAdmin()"/>
+        </form>
+        <!--
+        <p>Create Team or Create Questions?</p>
+        <a href="create_team.html"><button>Create Team</button></a> &nbsp; <a href="create_questions.html"><button>Create Questions</button></a>
+        -->
+    </body>
+</html>

@@ -1,6 +1,8 @@
 const firstName = document.querySelector('.firstName');
 const lastName = document.querySelector('.lastName');
 const email = document.querySelector('.email');
+const retrieve = document.querySelector('.retrieve');
+
 
 //posts formdata to local server
 const postData = async (url, data = {}) => {
@@ -22,11 +24,12 @@ const postData = async (url, data = {}) => {
 };
 
 //requires user to fill out all required form values, then passes formdata to post function, where it's sent to local server
-const handleSubmit = async (e) => {    
+/*
+const handleSubmit = async (e) => {     
     let formData = new FormData(this);
-    postData('/post_qs', formData);     
+    postData('/post_qs', formData);
 };
-
+*/
 const createTeam = async () => {
     let formData = new FormData(this);
     postData('/post_team', formData);
@@ -50,13 +53,19 @@ const handleCreate = async () => {
     }
     catch(err){
         console.log(err);
-    }
-    
+    }    
+};
+
+const handleQuestionSubmit = async (e) => {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+    postData('/_', formData);
 };
 
 export { 
     postData,
-    handleSubmit,
+    //handleSubmit,
     createTeam,
     handleTeams,
     handleAdmin,
