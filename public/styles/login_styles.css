@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: papayawhip;
+}
+.logo {
+    width: 100%;
+    background-color: bisque;
+}
+.container {
+    display: grid;
+    grid-template-rows: 40vh 40vh;
+    justify-content: center;
+    align-items: center;
+}

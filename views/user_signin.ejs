@@ -1,24 +1,76 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Woody's Tuesday Night Trivia</title>
-	</head>
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+        <link href="/styles/form_signin.css" rel="stylesheet" type="text/css"/>
+    </head>
+        <header>
+            <div class="logo">
+                Woody's Trivia
+            </div>        
+        </header>
     <body>
-        <div class="joinTeam">
-            <form method='post' action='/signin'>
-                <label for='email'>Enter your email:</label><br>
-                <input type='email' name='email' required><br>
-                <label for='pw'>Enter your password:</label><br>
-                <input type='password' name='pw' required><br>
-                <label for='theme'>Pick your theme:</label><br>
-                <select name='theme'>
-                    <option value='green'>Green</option>
-                    <option value='red'>Red</option>
-                    <option value='blue'>Blue</option>
-                </select>
-                <input type='submit' id='sub' name='sub' value='Submit' onsubmit='return Client.handleTeams();'>			
-            </form>
-        </div>
-    </body>
+        <main class="container">
+            <section class="joinTeam">
+                <form class="signin" method='post' action='/signin'>
+                    <label for='email'>Enter your email:</label>
+                    <input type='email' name='email' required>
+                    <label for='pw'>Enter your password:</label>
+                    <input type='password' name='pw' required>
+                    <label for='theme'>Pick your theme:</label>
+                    <select class="color_choice" name='theme'>
+                        <option value='space'>Space</option>
+                        <option value='desert'>Desert</option>
+                        <option value='autumn'>Autumn</option>
+                        <option value='tropical'>Tropical</option>
+                        <option value='forest'>Forest</option>
+                        <option value='city'>City</option>
+                    </select>
+                    <div class="buttons">
+                        <button id="pick_theme" onclick="changeBG();">Pick Theme</button>
+                        <input type='submit' id='sub' name='sub' value='Submit' onsubmit='return Client.handleTeams();'>
+                    </div>			
+                </form>
+            </section>
+        </main>
+        <script>
+                const pick = document.getElementById('pick_theme');
+                const color_choice = document.querySelector('.color_choice');
+        
+                const changeBG = (e) => {
+                    //document.body.style.backgroundColor = color_choice.options[color_choice.selectedIndex].value;
+                    //console.log(color_choice.options[color_choice.selectedIndex].value);
+                    let userChoice = `${color_choice.options[color_choice.selectedIndex].value}`; 
+                    if(userChoice == 'space'){
+                        document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+                        localStorage.setItem("userBG", "space");
+                    }
+                    else if(userChoice == 'desert'){
+                        document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+                        localStorage.setItem("userBG", "desert");
+                    }
+                    else if(userChoice == 'autumn'){
+                        document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+                        localStorage.setItem("userBG", "autumn");
+                    }
+                    else if(userChoice == 'tropical'){
+                        document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+                        localStorage.setItem("userBG", "tropical");
+                    }
+                    else if(userChoice == 'forest'){
+                        document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+                        localStorage.setItem("userBG", "forest");
+                    }
+                    else if(userChoice == 'city'){
+                        document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+                        localStorage.setItem("userBG", "city");
+                    }
+                };
+        
+            </script>
+
+    </body>    
 
 </html>

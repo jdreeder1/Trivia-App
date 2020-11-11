@@ -25,11 +25,21 @@ app.set('view engine', 'ejs');
 
 const rootPath = `C:/xampp/htdocs/Trivia/src`;
 let emailData = {};
-let user = '';
-let triviaTeam = '';
+
+let userInfo = {};
+//push teams into trivia answers, each team has team members, when all team members have answered, give option to go to next question, 
+//only team captain's answer is pushed to the database
+let hideNextButton = false;
+//let user = '';
+//let triviaTeam = '';
+let currentQuestion;
+let questionDataClone;
+
+//HAVING GLOBAL VARIABLES ON SERVER COULD CAUSE ISSUES IF MULTIPLE TEAMS USE THE SAME PORT!!!
 
 //tells express where to look for stylesheets
 //app.use(express.static('/src/client'));
+app.use(express.static( "public" ));
 
 app.get('/', (req, res) => {
     //let p = path.join(__dirname, 'src/client/index.html');
@@ -203,7 +213,31 @@ const updateAllListingsToHavePropertyType = async(client, q_number, q_data) => {
         console.log(`${result.matchedCount} document(s) matched the query criteria.`);     
 };
 
-const updateTeamScore = async(client, team, num_points) => {
+const findTeamInfo = async(client, team) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+                        .findOne({ teamName: team });
+
+    if (result) {
+        //console.log(`Found a listing in the collection with the name '${nameOfListing}':`);
+        //console.log(result);
+        return result;
+    } else {
+        console.log(`No listings found!'`);
+        return false;
+    }    
+};
+
+const updateTeamAnswer = async(client, team, guess) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+                    .updateOne(
+                        {teamName: team},
+                        {$push: { answers: guess }}
+                    );
+        console.log(`${result.matchedCount} document(s) matched the query criteria.`);     
+};
+
+//NEED TO UPDATE ANSWER FIELD FOR CORRECT QUESTION!
+const updateTeamScore = async(client, team, guess, num_points) => {
     let result = await client.db("woodys_trivia").collection("teams")
                     .updateOne(
                         {teamName: team}, 
@@ -212,7 +246,10 @@ const updateTeamScore = async(client, team, num_points) => {
                         },
                         {upsert: true}
                     );
-        console.log(`${result.matchedCount} document(s) matched the query criteria.`);     
+                    
+        console.log(`${result.matchedCount} document(s) matched the query criteria.`);   
+        
+        updateTeamAnswer(client, team, guess);
 };
 
 const getTeamInfo = async(client, team) => {
@@ -404,8 +441,9 @@ app.get('/get_qs', async (req, res) => {
 
 app.post('/post_team', async (req, res) => {
     const data = req.body;
+    answerArr = [];
 
-    let teamData = {teamName: data.teamName, captain: data.captain, runningTotal: 15};
+    let teamData = {teamName: data.teamName, captain: data.captain, loggedInUsers: 0, runningTotal: 15, answers: answerArr};
 
     //make sure team created isn't already in DB, make sure captain email isn't assigned to 2 diff teams
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
@@ -476,7 +514,12 @@ app.get('/create_questions', (req, res) => {
 });
 
 app.get('/user_login', (req, res) => {
-    res.render('user_signin');
+    let hi = 'hi';
+    let obj = {
+        space: 'space.jpg',
+        hello: hi
+    }
+    res.render('user_signin', obj);
 });
 
 //verified user login
@@ -493,9 +536,13 @@ app.post('/signin', async (req, res) => {
         let foundUser = await findUserLogin(client, 'teams', data);
 
         if(foundUser.captain){
-            user = 'captain';
-            triviaTeam = foundUser.team;
             //res.redirect('/question1');
+            userInfo.userType = 'captain';
+            userInfo.userName = foundUser.name;
+            userInfo.triviaTeam = foundUser.team;
+
+            res.redirect('/find_user');
+/*
             res.send(`<p id="log">Welcome, ${foundUser.name}! You're a captain for this game! Would you like to start playing trivia? <button onclick="openWin();">Play Trivia</button>
             <script>
             const log = document.getElementById("log");
@@ -507,12 +554,16 @@ app.post('/signin', async (req, res) => {
                 }
                 window.addEventListener('blur', pause);
             </script>`);
+            */
         }
-        else if(foundUser.player){
-            console.log(foundUser);
-            user = 'player';
-            triviaTeam = foundUser.team;
-            //res.redirect('/question1'); 
+        else if(foundUser.player){          
+            
+            userInfo.userType = 'player';
+            userInfo.userName = foundUser.name;
+            userInfo.triviaTeam = foundUser.team;
+
+            res.redirect('/find_user');
+/*
             res.send(`<p>Welcome, ${foundUser.name}!  Would you like to start playing trivia? <button onclick="openWin();">Play Trivia</button>
             <script>
             const log = document.getElementById("log");
@@ -525,14 +576,11 @@ app.post('/signin', async (req, res) => {
                 window.addEventListener('blur', pause);
             </script>`
             );
+        */
         }
         else {
             res.send(`${foundUser.err} <a href="/user_login"><button>Try Again</button></a> &nbsp; <a href="/"><button>Home</button></a>`);
         }
-        /*
-        else {
-            res.send(`<p>Login info not found! Try again?</p><br> <a href='src/client/views/admin_login.html'<button>Admin Login</button></a>`);
-        }*/
     }
 
     catch (e) {
@@ -541,6 +589,12 @@ app.post('/signin', async (req, res) => {
         await client.close();
     }
 
+});
+
+app.get('/find_user', async(req, res) => {
+    res.render('check_user', {
+        userDetails: userInfo
+    });
 });
 
 app.get('/questions', async(req, res) => {
@@ -558,7 +612,7 @@ app.get('/questions', async(req, res) => {
             else {
                 //res.send(findQuestions);
                 questionData = foundQuestions;
-                console.log(questionData[0]);
+                questionDataClone = JSON.parse(JSON.stringify(questionData));
                 res.redirect('/trivia');
             }
         }
@@ -578,24 +632,29 @@ app.get('/questions', async(req, res) => {
 app.get('/trivia', async(req, res) => {
     //res.send(questionData[0]);  
     //don't need to specify file type ejs b/c already specified ejs as template 
-    console.log(user);
+    currentQuestion = questionData.shift();
+
+    let index = questionDataClone.findIndex((question) => {
+        return question.q == currentQuestion.q;
+    });
+    console.log(`Question ${index+1}`);
     res.render('index', {
-        questions: questionData,
-        typeOfUser: user,
-        team: triviaTeam
+        questions: currentQuestion,
+        typeOfUser: userInfo.userType,
+        team: userInfo.triviaTeam,
+        question_num: index+1
     });
 });
 
-app.post('/get_answer1', async(req, res) => {
+app.post('/get_answer', async(req, res) => {
 
     const guess = req.body.answer;
     const confidence = Number(req.body.confidence); 
-    const q_no = Number(req.body.q_no);
     const team_name = req.body.teamName;
+    const userType = req.body.userType;
+    const question_num = req.body.question_num;
     let outcome = '';
     let total;
-
-    console.log(team_name);
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
@@ -611,8 +670,6 @@ app.post('/get_answer1', async(req, res) => {
         catch(err){
             console.log(err);
         } 
-        //total = teamInfo.runningTotal;
-        //console.log(typeof(total), total);
     }
     catch(err){
         console.log(err);
@@ -627,17 +684,23 @@ app.post('/get_answer1', async(req, res) => {
         // Connect to the MongoDB cluster
         await newClient.connect();    
 
-        if(guess == questionData[q_no].correct){
+        if(guess == currentQuestion.correct && userType == 'captain'){
             outcome = `Good job! You guessed correctly and gained ${confidence} points!`;
             let newTotal = total + confidence;
             console.log(newTotal);
-            let teamScore = await updateTeamScore(newClient, team_name, newTotal);
+            let teamScore = await updateTeamScore(newClient, team_name, guess, newTotal);
+            //hideNextButton = false;
         }
-        else {
+        else if(guess !== currentQuestion.correct && userType == 'captain') {
             outcome = `Sorry, you guessed incorrectly. Minus ${confidence} points.`;
             let newTotal = total - confidence;
             console.log(newTotal);
-            let teamScore = await updateTeamScore(newClient, team_name, newTotal);
+            let teamScore = await updateTeamScore(newClient, team_name, guess, newTotal);
+            //hideNextButton = false;
+        }
+        else {
+            outcome = `Waiting on captain's answer.`;
+            //hideNextButton = true;
         }
     }
     catch(err){
@@ -647,23 +710,87 @@ app.post('/get_answer1', async(req, res) => {
         await client.close();
     }
 
-    
-    //console.log(typeof(q_no), q_no);
-    //res.send(questionData[q_no].correct);
     res.render('answer', {
-        correctAnswer: questionData[q_no].correct,
+        correctAnswer: currentQuestion.correct,
         guessedAnswer: guess,
         points: confidence,
-        result: outcome
+        result: outcome,
+        user: userType,
+        team: team_name,
+        question_num: question_num
     });
     
     //res.redirect('/show_results');
 });
+
+app.post('/check_answered', async(req, res) => {
+    //res.send(hideNextButton);
+    const team_name = req.body.teamName;
+    const question_num = req.body.question_num;
+    console.log(team_name);
+
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        let findTeam = await findTeamInfo(client, team_name);
+        if(findTeam.answers.length >= question_num){
+            console.log("Question has been answered.");
+            res.redirect('/trivia');
+        }
+        else {
+            console.log("Captain has not answered question.");
+            res.render('check_if_answered', {
+                teamName: team_name,
+                questionNum: question_num
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+    } 
+    finally {
+        await client.close();
+    }
+    
+});
+
+app.get('/check_if_answered', async(req, res) => {
+    const team_name = req.body.teamName;
+    const question_num = req.body.question_num;
+    console.log(team_name);
+
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        let findTeam = await findTeamInfo(client, team_name);
+        if(findTeam.answers.length >= question_num){
+            console.log("Question has been answered.");
+            res.redirect('/trivia');
+        }
+        else {
+            console.log("Captain has not answered question.");
+            res.render('check_if_answered', {
+                teamName: team_name,
+                questionNum: question_num
+            });
+        }
+    }
+    catch(err){
+        console.log(err);
+    } 
+    finally {
+        await client.close();
+    }    
+}); 
 /*
 app.get('/show_score', async(req, res) => {
     
-});*/
-
+});
+*/
 //newUser signup
 app.post('/validate', async (req, res) => {
     let data = req.body;
@@ -678,7 +805,7 @@ app.post('/validate', async (req, res) => {
     //req.body;
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
-    //NEED TO LOOK FOR DUPLICATE REQUEST! (i.e., if a user's email has already been used)
+    //NEED TO LOOK FOR DUPLICATE REQUEST! (e.g., if a user's email has already been used)
     
     try {
         // Connect to the MongoDB cluster

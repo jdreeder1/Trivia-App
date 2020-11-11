@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+    </head>
+    <body>
+
+        <p id="log">
+        </p> <button onclick="openWin();">Play Trivia</button>
+
+        <script>
+            const log = document.getElementById("log");
+
+            const changeBG = () => {
+                let userChoice = localStorage.getItem('userBG') ;
+                if(userChoice == 'space'){
+                    document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+                }
+                else if(userChoice == 'desert'){
+                    document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+                }
+                else if(userChoice == 'autumn'){
+                    document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+                }
+                else if(userChoice == 'tropical'){
+                    document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+                }
+                else if(userChoice == 'forest'){
+                    document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+                }
+                else if(userChoice == 'city'){
+                    document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+                }
+            };
+
+            const displayText = () => {
+                if('<%= userDetails.userType %>' == 'captain'){
+                    let captain = '<%= userDetails.userName %>';
+                log.innerText = `Welcome, ${captain}! You're a captain for this game! Would you like to start playing trivia?`;
+                }
+                else {
+                    let user = '<%= userDetails.userName %>';
+                    log.innerText = `Welcome, ${user}! Would you like to start playing trivia?`;
+                }
+            }
+
+            const openWin = () => { 
+                window.open("/questions"); 
+            };
+            const pause = () => {
+                log.textContent = "Page timed out!";
+            };
+
+            window.addEventListener('load', changeBG);
+            window.addEventListener('load', displayText);
+            window.addEventListener('blur', pause);
+        </script>
+    </body>
+</html>

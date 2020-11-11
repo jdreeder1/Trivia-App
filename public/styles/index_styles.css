@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.question {
+    display: grid;
+    height: 80vh;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+}
+
+.question_content {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    grid-gap: 20px;
+    grid-template-rows: repeat(3, 40px);
+}
+.question_form {
+    display: grid;
+    align-items: center;
+    grid-template-rows: repeat(4, 60px);
+    width: 40vw;
+}
+
+.form_foot {
+    display: grid;
+    grid-template-columns: 30% 20% 30%;
+    justify-content: center;
+    align-items: center;
+}
+#confidence {
+    grid-column: 1;
+}
+.sub {
+    grid-column: 3;
+}

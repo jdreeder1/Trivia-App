@@ -3,15 +3,19 @@
     <head>
         <meta charset="utf-8">
         <title>Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet">
+        <link href="/styles/admin_styles.css" rel="stylesheet">
     </head>
     <header>
         <div class="logo">
-            Trivia
+            Woody's Trivia
         </div>
     </header>
     <body>
+        <main class="container">
         <h2 class="adminLogin">Admin Login</h2>
-        <form method="post" action="/admin_signin">
+        <form class="admin_signin" method="post" action="/admin_signin">
             <label for="adminUsername">Input email</label><br>
             <input class="adminUsername" name="adminUsername" type="email" placeholder="john.doe@gmail.com" required/><br>
             <label for="admin_pw">Input password </label><br>
@@ -31,6 +35,7 @@
             </select><br><br>
             <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.handleAdmin()"/>
         </form>
+        </main>
         <!--
         <p>Create Team or Create Questions?</p>
         <a href="create_team.html"><button>Create Team</button></a> &nbsp; <a href="create_questions.html"><button>Create Questions</button></a>

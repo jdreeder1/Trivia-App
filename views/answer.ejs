@@ -3,46 +3,91 @@
     <head>
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
-        <style>
-            body {
-                font-family: Arial, Helvetica, sans-serif;
-            }
-            main {
-                display: grid;
-                grid-template-columns: 1fr 2fr 1fr;
-                grid-template-rows: repeat(5, 100vh);
-                justify-content: center;
-                align-items: center;
-            }
-            section {
-                grid-column: 2;
-            }
-            .question_number, .question_body {
-                text-align: center;
-            }
-             
-            input {
-                text-align: justify;
-                margin-left: 25%;
-            }
-        </style>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
+        <!--
         <header>
             <div class="logo">
-                Trivia
+                Woody's Trivia
             </div>
         </header>
+    -->
     <main>
         <section>
+            <h1>Team: </h1>
+            <h2 class="team_name"><%= team %></h2>
             <h1>Answer: </h1>
-            <h2> <%= correctAnswer %> </h2>
+            <h2 class="correct"> <%= correctAnswer %> </h2>
             <h1>Guess: </h1>
             <h2> <%= guessedAnswer %></h2>
             <h1>Wager: </h1>
             <h2> <%= points %></h2>
             <h3> <%= result %></h3>
+
+            <div class="next_question">
+                <form  method="get" action="/trivia">
+                    <input class="sub" type="submit" value="Next Question" />
+                </form>
+            </div>
+            <div class="checkAnswer">
+                <h3>Check if question answered: </h3>
+                <form  method="post" action="/check_answered">
+                    <input type="hidden" name="teamName" value="<%= team %>"/>
+                    <input type="hidden" name="question_num" value="<%= question_num %>"/>
+                    <input class="check" type="submit" value="Check"/>
+                </form>
+            </div>
         </section>
     </main>
+        <script>
+            const sub = document.querySelector('.sub');
+            const next_question = document.querySelector('.next_question');
+            const checkAnswer = document.querySelector('.checkAnswer');
+            const teamName = document.querySelector('.team_name');
+            const correct = document.querySelector('.correct');
+
+            const verifyUser = () => {
+                console.log('<%= user %>', '<%= team %>');
+                if( '<%= user %>' == 'player'){
+                    next_question.style.display = 'none';
+                    correct.style.display = 'none';
+                }
+                else if('<%= user %>' == 'captain'){
+                    checkAnswer.style.display = 'none';
+                }
+            }
+
+            verifyUser();
+
+            const changeBG = () => {
+                let userChoice = localStorage.getItem('userBG') ;
+                if(userChoice == 'space'){
+                    document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+                }
+                else if(userChoice == 'desert'){
+                    document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+                }
+                else if(userChoice == 'autumn'){
+                    document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+                }
+                else if(userChoice == 'tropical'){
+                    document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+                }
+                else if(userChoice == 'forest'){
+                    document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+                }
+                else if(userChoice == 'city'){
+                    document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+                }
+                else {
+                    document.body.style.cssText = "background-color: papayawhip; color: white";
+                }
+            };
+
+            window.addEventListener('load', changeBG);
+            //window.addEventListener('load', verifyUser);
+        </script>
     </body>
 </html>

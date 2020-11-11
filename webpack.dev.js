@@ -43,7 +43,7 @@ module.exports = {
           '/questions': 'http://localhost:3330',
           '/trivia': 'http://localhost:3330',
           '/create_team': 'http://localhost:3330',
-          '/src/client/styles': 'http://localhost:3330'
+          '/get_answer': 'http://localhost:3330'
         }
       },
     plugins: [

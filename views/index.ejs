@@ -3,146 +3,122 @@
     <head>
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
-        <style>
-            body {
-                font-family: Arial, Helvetica, sans-serif;
-            }
-            main {
-                display: grid;
-                grid-template-columns: 1fr 2fr 1fr;
-                grid-template-rows: repeat(5, 100vh);
-                justify-content: center;
-                align-items: center;
-            }
-            section {
-                grid-column: 2;
-            }
-            .question_number, .question_body {
-                text-align: center;
-            }
-             
-            input {
-                text-align: justify;
-                margin-left: 25%;
-            }
-        </style>
+        <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
+
     </head>
     <body>
+        <!--
         <header>
             <div class="logo">
                 Trivia
             </div>
         </header>
+    -->
     <main>
             <!--if typeOfUser = captain, show submit, else don't-->
-        <section>
+        <section class="question">
+            <div class="question_content">
                 <h1> <%= team %> </h1>
-
-            <h1 class="question_number">Question 1</h1>
-            <h2 class="question_body"> <%= questions[0].q %> </h2>
-            <form class="question1" method="post" action="/get_answer1">
-                <input class="choice1" type="radio" name="answer" value="a"/><span class="option1"> <%= questions[0].option1 %> </span><br>
-                <input class="choice2" type="radio" name="answer" value="b"/><span class="option2"> <%= questions[0].option2 %></span><br>
-                <input class="choice3" type="radio" name="answer" value="c"/><span class="option3"> <%= questions[0].option3 %></span><br>
-                <input class="choice4" type="radio" name="answer" value="d"/><span class="option4"> <%= questions[0].option4 %> </span><br>
-                <select name="confidence" class="confidence">
+                <h2 class="question_number"> Question <%= question_num %></h2>
+                <h3 class="question_body"> <%= questions.q %> </h3>
+            </div>            
+            <form method="post" action="/get_answer">
+            <div class="question_form">
+                <div class="row1"><input id="choice1" type="radio" name="answer" value="a"/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
+                <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><label for="choice2" id="option2"><%= questions.option2 %></label></div>
+                <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><label for="choice3" id="option3"><%= questions.option3 %></label></div>
+                <div class="row4"><input id="choice4" type="radio" name="answer" value="d"/><label for="choice4" id="option4"><%= questions.option4 %></label></div>
+            </div>
+            <div class="form_foot">    
+                <label for="confidence">Confidence</label>
+                <select name="confidence" id="confidence">
                     <option value="" selected></option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
-                </select> <input type="hidden" name="teamName" value="<%= team %>"/> <input type="hidden" name="q_no" value="0" /> &nbsp; <input class="sub" onclick="checkAnswer();" type="submit" value="Submit"/>
+                </select> 
+                <input type="hidden" name="teamName" value="<%= team %>"/> <input type="hidden" name="userType" value="<%= typeOfUser %>" /> &nbsp; 
+                <input type="hidden" name="question_num" value="<%= question_num %>"/>
+                <input class="sub" type="submit" value="Submit"/>
+            </div>
             </form>    
-        </section>
-        <section>
-            <h1 class="question_number">Question 2</h1>
-            <h2 class="question_body"> <%= questions[1].q %> </h2>
-            <form method="post" action="">
-                <input class="choice1" type="radio" name="answer" value="a"/><span class="option1"> <%= questions[1].option1 %> </span><br>
-                <input class="choice2" type="radio" name="answer" value="b"/><span class="option2"> <%= questions[1].option2 %></span><br>
-                <input class="choice3" type="radio" name="answer" value="c"/><span class="option3"> <%= questions[1].option3 %></span><br>
-                <input class="choice4" type="radio" name="answer" value="d"/><span class="option4"> <%= questions[1].option4 %> </span><br>
-            </form>    
-            <input class="sub" type="submit" value="Submit"/>
-        </section>
-        <section>
-            <h1 class="question_number">Question 3</h1>
-            <h2 class="question_body"> <%= questions[2].q %> </h2>
-            <form method="post" action="">
-                <input class="choice1" type="radio" name="answer" value="a"/><span class="option1"> <%= questions[2].option1 %> </span><br>
-                <input class="choice2" type="radio" name="answer" value="b"/><span class="option2"> <%= questions[2].option2 %></span><br>
-                <input class="choice3" type="radio" name="answer" value="c"/><span class="option3"> <%= questions[2].option3 %></span><br>
-                <input class="choice4" type="radio" name="answer" value="d"/><span class="option4"> <%= questions[2].option4 %> </span><br>
-            </form>    
-            <input class="sub" type="submit" value="Submit"/>
-        </section>
-        <section>
-            <h1 class="question_number">Question 4</h1>
-            <h2 class="question_body"> <%= questions[3].q %> </h2>
-            <form method="post" action="">
-                <input class="choice1" type="radio" name="answer" value="a"/><span class="option1"> <%= questions[3].option1 %> </span><br>
-                <input class="choice2" type="radio" name="answer" value="b"/><span class="option2"> <%= questions[3].option2 %></span><br>
-                <input class="choice3" type="radio" name="answer" value="c"/><span class="option3"> <%= questions[3].option3 %></span><br>
-                <input class="choice4" type="radio" name="answer" value="d"/><span class="option4"> <%= questions[3].option4 %> </span><br>
-            </form>    
-            <input class="sub" type="submit" value="Submit"/>
-        </section>
-        <section>
-            <h1 class="question_number">Question 5</h1>
-            <h2 class="question_body"> <%= questions[4].q %> </h2>
-            <form method="post" action="">
-                <input class="choice1" type="radio" name="answer" value="a"/><span class="option1"> <%= questions[4].option1 %> </span><br>
-                <input class="choice2" type="radio" name="answer" value="b"/><span class="option2"> <%= questions[4].option2 %></span><br>
-                <input class="choice3" type="radio" name="answer" value="c"/><span class="option3"> <%= questions[4].option3 %></span><br>
-                <input class="choice4" type="radio" name="answer" value="d"/><span class="option4"> <%= questions[4].option4 %> </span><br>
-            </form>    
-            <input class="sub" type="submit" value="Submit"/>
+            <div class="player_btn"></div>
         </section>
     </main>    
         
         <script>
-        let sub = document.querySelectorAll('.sub');
-        let question_body = document.querySelectorAll('.question_body');
-        let radios = document.querySelectorAll('input[type="radio"]');
-        let confidence = document.querySelectorAll('.confidence');
-        let choice1 = document.querySelectorAll('.choice1');
-        let choice2 = document.querySelectorAll('.choice2');
-        let choice3 = document.querySelectorAll('.choice3');
-        let choice4 = document.querySelectorAll('.choice4');
-        let option1 = document.querySelectorAll('.option1');
-        let option2 = document.querySelectorAll('.option2');
+
+        const sub = document.querySelector('.sub');
+        const question_body = document.querySelector('.question_body');
+        const radios = document.querySelectorAll('input[type="radio"]');
+        const confidence = document.getElementById('confidence');
+        const choice1 = document.getElementById('choice1');
+        const choice2 = document.getElementById('choice2');
+        const choice3 = document.getElementById('choice3');
+        const choice4 = document.getElementById('choice4');
+        const option1 = document.getElementById('option1');
+        const option2 = document.getElementById('option2');
+        const player_btn = document.querySelector('.player_btn');
+
+        const changeBG = () => {
+            let userChoice = localStorage.getItem('userBG') ;
+            if(userChoice == 'space'){
+                document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+            }
+            else if(userChoice == 'desert'){
+                document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+            }
+            else if(userChoice == 'autumn'){
+                document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+            }
+            else if(userChoice == 'tropical'){
+                document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+            }
+            else if(userChoice == 'forest'){
+                document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+            }
+            else if(userChoice == 'city'){
+                document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+            }
+            else {
+                document.body.style.cssText = "background-color: papayawhip; color: white";
+            }
+        };
 
         localStorage.setItem("user", "<%= typeOfUser %>");
         localStorage.setItem("team", "<%= team %>");
 
-            const hideSubmit = (typeOfUser) => {
+            const hideSubmit = (typeOfUser, e) => {
+
                 if(typeOfUser == 'player' || localStorage.getItem('user') == 'player'){ 
                     //sub.style.display = 'none';
-                    sub.forEach(btn => {
-                        btn.style.display = 'none';
-                    });
+                    console.log(e);
                 }
             };
-        
+            /*
+            const nextQuestion = () => {
+                const markup = `<button onclick='/trivia'>Next Question</button>`;
+                player_btn.insertAdjacentHTML('afterbegin', markup);
+            }
+        */
             hideSubmit("<%= typeOfUser %>");
 
             const trueFalse = () => {
-                question_body.forEach((q, i=0) => {
-                    if(q.innerText.includes('T/F') || q.innerText.includes('t/f')){
-                        choice1[i].value = 't';
-                        choice2[i].value = 'f';
-                        choice3[i].style.display = 'none';
-                        choice4[i].style.display = 'none';
-                        option1[i].innerText = 'True';
-                        option2[i].innerText = 'False';
+                //question_body.forEach((q, i=0) => {
+                    if(question_body.innerText.includes('T/F') || question_body.innerText.includes('t/f')){
+                        choice1.value = 't';
+                        choice2.value = 'f';
+                        choice3.style.display = 'none';
+                        choice4.style.display = 'none';
+                        option1.innerText = 'True';
+                        option2.innerText = 'False';
                     }
-                    i++;
-                });
             };
 
             trueFalse();
-
+/*
             const checkAnswer = (e) => {
                 
                 radios.forEach((radio, i=0) => {
@@ -151,8 +127,9 @@
                     });
                 });
             };
-
-            window.addEventListener('load', checkAnswer);
+*/
+            window.addEventListener('load', changeBG());
+            //window.addEventListener('load', checkAnswer);
 
         </script>
 

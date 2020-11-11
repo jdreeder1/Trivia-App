@@ -3,14 +3,17 @@
     <head>
         <meta charset="utf-8">
         <title>Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet">
+        <link href="/styles/login_styles.css" rel="stylesheet">
     </head>
     <header>
         <div class="logo">
-            Trivia
-        </div>
-        
+            Woody's Trivia
+        </div>        
     </header>
     <body>
+        <main class="container"> 
         <section>
             <!--send email notifying when a user wants to create an account
             email id associated with preferred team in nedb if approved
@@ -28,10 +31,11 @@
               <input type="submit" value="Submit" onsubmit="return Client.handleCreate()"/>
             </form>
         </section>
-        <main> 
+        <section> 
             <h2 class="loginSection">Login</h2>
             <a href="/user_login"><button class="userLogin">Login as Player</button></a><br><br>
             <a href="/admin_login"><button class="adminLogin">Login as Administrator</button></a> <br><br>
+        </section>
         </main>
     </body>
 </html>

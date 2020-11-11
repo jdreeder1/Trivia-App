@@ -1,0 +1,47 @@
+body {
+    background-color: papayawhip;
+    margin: 0;
+    padding: 0;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.signin {
+    display: grid;
+    margin-top: -20vh;
+    height: 50vh;
+    width: 40vw;
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(5, minmax(20px, 1fr));
+    font-size: 2em;
+}
+
+.logo {
+    width: 100%;
+    background-color: bisque;
+}
+
+label {
+    grid-column: 1;
+}
+
+input[type='email'], input[type='password'], select {
+    grid-column: 2;
+    height: 30px;
+}
+
+.buttons {
+    display: grid;
+    grid-gap: 20px;
+    width: 200%;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: 50px 50px;
+}
+
+#pick_theme {
+    grid-column: 2;
+}
+
+#sub {
+    grid-column: 2;
+}
