@@ -8,12 +8,19 @@ body {
 
 .signin {
     display: grid;
-    margin-top: -20vh;
+    margin-top: -35vh;
     height: 50vh;
     width: 40vw;
     grid-template-columns: repeat(2, 50%);
-    grid-template-rows: repeat(5, minmax(20px, 1fr));
+    grid-template-rows: repeat(6, minmax(40px, 1fr));
     font-size: 2em;
+}
+
+.error {
+    grid-column: 1/-1;
+    font-size: 0.75em;
+    color: red;
+    text-align: center;
 }
 
 .logo {
@@ -44,4 +51,22 @@ input[type='email'], input[type='password'], select {
 
 #sub {
     grid-column: 2;
+}
+
+@media(max-width: 1400px){
+    .signin {
+        font-size: 1.75em;
+    }
+}
+
+@media(max-width: 1200px){
+    .signin {
+        width: 60vw;
+    }
+}
+
+@media(max-width: 1050px){
+    .signin {
+        font-size: 1.5em;
+    }
 }

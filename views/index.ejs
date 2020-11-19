@@ -16,6 +16,14 @@
     -->
     <main>
             <!--if typeOfUser = captain, show submit, else don't-->
+            <% if (login_error) { %>
+                <div class="error"> <%= login_error %> </div>
+            <% } %> 
+
+            <% if (already_answered) {%>
+                <div class="error"> <%= already_answered %> </div>    
+            <% } %>             
+            
         <section class="question">
             <div class="question_content">
                 <h1> <%= team %> </h1>
@@ -119,6 +127,8 @@
 
             trueFalse();
 /*
+
+
             const checkAnswer = (e) => {
                 
                 radios.forEach((radio, i=0) => {

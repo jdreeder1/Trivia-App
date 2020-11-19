@@ -16,6 +16,9 @@
     -->
     <main>
         <section>
+            <% if (already_answered) { %>
+                <div class="error"> <%= already_answered %> </div>
+            <% } %>
             <h1>Team: </h1>
             <h2 class="team_name"><%= team %></h2>
             <h1>Answer: </h1>

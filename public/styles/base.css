@@ -2,11 +2,14 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: papayawhip;
 }
 .logo {
     font-family: 'Modak', cursive;
     font-size: 4em;
     text-align: center;
+    width: 100%;
+    background-color: bisque;
 }
 main {
     display: grid;

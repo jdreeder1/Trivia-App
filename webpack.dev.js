@@ -43,13 +43,15 @@ module.exports = {
           '/questions': 'http://localhost:3330',
           '/trivia': 'http://localhost:3330',
           '/create_team': 'http://localhost:3330',
-          '/get_answer': 'http://localhost:3330'
+          '/get_answer': 'http://localhost:3330',
+          '/check_answered': 'http://localhost:3330',
+          'check_if_answered': 'http://localhost:3330'
         }
       },
     plugins: [
         new HtmlWebPackPlugin({
-            template: "./src/client/views/login.html",
-            filename: "./login.html",
+            template: "./views/login.ejs",
+            filename: "./login.ejs",
         }),
         new CleanWebpackPlugin({
             // Simulate the removal of files

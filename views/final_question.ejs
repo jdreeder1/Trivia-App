@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <main>
+            <section>
+                    <% if (login_error) { %>
+                        <div class="error"> <%= login_error %> </div>
+                    <% } %> 
+                <section class="question">
+                    <div class="question_content">
+                        <h1> <%= team %> </h1>
+                        <h2 class="question_number"> Question <%= question_num %></h2>
+                        <h3 class="question_body"> <%= questions.q %> </h3>
+                    </div>            
+                    <form method="post" action="/final_answer">
+                    <div class="question_form">
+                        <div class="row1"><input id="choice1" type="radio" name="answer" value="a"/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
+                        <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><label for="choice2" id="option2"><%= questions.option2 %></label></div>
+                        <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><label for="choice3" id="option3"><%= questions.option3 %></label></div>
+                        <div class="row4"><input id="choice4" type="radio" name="answer" value="d"/><label for="choice4" id="option4"><%= questions.option4 %></label></div>
+                    </div>
+                    <input type="hidden" name="teamName" value="<%= team %>"/> <input type="hidden" name="userType" value="<%= typeOfUser %>" /> &nbsp; 
+                    <input type="hidden" name="question_num" value="<%= question_num %>"/>
+                    <input class="sub" type="submit" value="Submit"/>
+            </section>
+        </main>
+    </body>
+</html>

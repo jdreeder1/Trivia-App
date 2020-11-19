@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <main>
+            <section>
+                <% if (login_error) { %>
+                    <div class="error"> <%= login_error %> </div>
+                <% } %> 
+                <h1>Team: <%= team %></h1>
+                <h1>Scores: </h1>
+                <div class="scoreboard">                                      
+                </div>
+                <br>
+                <form method="POST" action="/final_bet">
+                    <label for="bet">How much would you like to bet?</label>
+                    <input type="number" id="bet" name="bet" min="1" max="<%= teamScore %>" required/>
+                    <input type="hidden" name="team" value="<%= team %>"/>
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+        </main>
+        <script>
+            const scoreboard = document.querySelector('.scoreboard');  
+            const bet = document.getElementById('bet');
+            let teamNames = '<%= teamNames %>'.split(',');
+            let teamTotals = '<%= teamTotals %>'.split(',');
+            let markup = '';
+
+            for(let i=0; i<teamNames.length; i++){
+                markup += `<li style="list-style: none;">${teamNames[i]}: ${teamTotals[i]}</li>`;
+            }
+            scoreboard.insertAdjacentHTML('afterbegin', markup);
+
+            bet.addEventListener('keypress', (e) => {
+                e.preventDefault();
+            });
+            bet.addEventListener('paste', (e) => {
+                e.preventDefault();
+            });
+        </script>
+    </body>
+</html>

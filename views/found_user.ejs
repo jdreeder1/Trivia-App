@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <main>
+            <section>
+                <h1>Welcome, <%= userInfo.userName %>!</h1>
+                    <h2 class="message"></h2>
+               
+                 <a href="/questions"><button>Play Trivia</button></a>
+            </section>
+        </main>
+            <script>
+                const message = document.querySelector('.message');
+                if( '<%= userInfo.userType %>' == 'captain'){
+                    message.innerText = 'You are a captain for this game!';
+                }
+                else {
+                    message.innerText = 'Would you like to play trivia?';
+                }
+
+                const changeBG = () => {
+                let userChoice = localStorage.getItem('userBG') ;
+                if(userChoice == 'space'){
+                    document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+                }
+                else if(userChoice == 'desert'){
+                    document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+                }
+                else if(userChoice == 'autumn'){
+                    document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+                }
+                else if(userChoice == 'tropical'){
+                    document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+                }
+                else if(userChoice == 'forest'){
+                    document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+                }
+                else if(userChoice == 'city'){
+                    document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+                }
+                else {
+                    document.body.style.cssText = "background-color: papayawhip; color: white";
+                }
+            };
+
+            window.addEventListener('load', changeBG);
+            </script>
+    </body>
+</html>
