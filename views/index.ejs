@@ -22,7 +22,11 @@
 
             <% if (already_answered) {%>
                 <div class="error"> <%= already_answered %> </div>    
-            <% } %>             
+            <% } %>
+            
+        <form class="logout_form" method="get">
+            <button class="logout_btn" type="submit">Logout</button>
+        </form>
             
         <section class="question">
             <div class="question_content">
@@ -32,14 +36,14 @@
             </div>            
             <form method="post" action="/get_answer">
             <div class="question_form">
-                <div class="row1"><input id="choice1" type="radio" name="answer" value="a"/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
+                <div class="row1"><input id="choice1" type="radio" name="answer" value="a" required/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
                 <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><label for="choice2" id="option2"><%= questions.option2 %></label></div>
                 <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><label for="choice3" id="option3"><%= questions.option3 %></label></div>
                 <div class="row4"><input id="choice4" type="radio" name="answer" value="d"/><label for="choice4" id="option4"><%= questions.option4 %></label></div>
             </div>
             <div class="form_foot">    
                 <label for="confidence">Confidence</label>
-                <select name="confidence" id="confidence">
+                <select name="confidence" id="confidence" required>
                     <option value="" selected></option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -69,6 +73,8 @@
         const option1 = document.getElementById('option1');
         const option2 = document.getElementById('option2');
         const player_btn = document.querySelector('.player_btn');
+        const logout_btn = document.querySelector('.logout_btn');
+        const logoutForm = document.querySelector('.logout_form');
 
         const changeBG = () => {
             let userChoice = localStorage.getItem('userBG') ;
@@ -126,20 +132,21 @@
             };
 
             trueFalse();
-/*
 
+            const logout = async(e) => {
+                const logout = confirm('Are you sure you\'d like to logout? If you logout, you won\'t be able to login again during this current trivia session.');
 
-            const checkAnswer = (e) => {
-                
-                radios.forEach((radio, i=0) => {
-                    radio.addEventListener('click', (e) => {
-                        console.log(e.target.value)
-                    });
-                });
+                if(logout){
+                    logoutForm.action = '/';
+                    let logoutUser = await fetch('/logout');                 
+                }
+                else {
+                    e.preventDefault();
+                }
             };
-*/
+
             window.addEventListener('load', changeBG());
-            //window.addEventListener('load', checkAnswer);
+            logout_btn.addEventListener('click', logout);
 
         </script>
 

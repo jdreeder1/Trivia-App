@@ -10,13 +10,15 @@
         <main>
             <section>
                 <h1>Welcome, <%= userInfo.userName %>!</h1>
-                    <h2 class="message"></h2>
-               
-                 <a href="/questions"><button>Play Trivia</button></a>
+                    <h2 id="message"></h2>
+
+                 <h1>Start Time: </h1>
+                 <h2 id="start"></h2>
             </section>
         </main>
             <script>
-                const message = document.querySelector('.message');
+                const message = document.getElementById('message');
+
                 if( '<%= userInfo.userType %>' == 'captain'){
                     message.innerText = 'You are a captain for this game!';
                 }
@@ -48,6 +50,36 @@
                     document.body.style.cssText = "background-color: papayawhip; color: white";
                 }
             };
+
+            const countdownTimer = () => {
+            //The + before the new Date is shorthand to tell JavaScript to cast the object as an integer, 
+            //which gives you the object’s Unix timestamp represented as microseconds since the epoch.
+            const difference = +new Date("<%= startInfo %>") - +new Date();
+            let remaining = `<form method="post" action="/questions">
+                                <button type="submit">Play Trivia</button>
+                            </form>`;
+
+            if (difference > 0) {
+                const parts = {
+                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60),
+                };
+                //remaining is now set equal to an array of the keys in parts. 
+                //Since remaining is now an array, you can use the .map() method. 
+                //The .map() method will iterate over each item in remaining and allow you to perform a function on each item.
+                remaining = Object.keys(parts).map(part => {
+                //bracket notation gives access to the value in the obj's key-value pair
+                return `${parts[part]} ${part}`;
+                }).join(" ");
+            }
+
+            document.getElementById("start").innerHTML = remaining;
+            };
+
+            countdownTimer();
+            setInterval(countdownTimer, 1000);
 
             window.addEventListener('load', changeBG);
             </script>

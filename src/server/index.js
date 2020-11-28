@@ -29,13 +29,14 @@ app.use(bodyParser.urlencoded({
 app.use(session({
     secret: 'secret-key',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { maxAge: 86400000 }
 }));
+
 app.use(flash());
 
 app.set('view engine', 'ejs');
 
-let userInfo = {};
 //push teams into trivia answers, each team has team members, when all team members have answered, give option to go to next question, 
 //only team captain's answer is pushed to the database
 let hideNextButton = false;
@@ -169,6 +170,36 @@ const findUserLogin = async (client, collection, userLogin) => {
 
 };
 
+const findStartTime = async(client) => {
+    let result = await client.db("woodys_trivia").collection("questions")
+                    .findOne(
+                        {"event": "trivia"}
+                    );
+        if (result) {
+            //console.log(`Found a listing in the collection with the name '${nameOfListing}':`);
+            //console.log(result);
+            return result;
+        } else {
+            console.log(`No listings found!'`);
+            return false;
+        } 
+}
+
+const logoutUser = async(client, team, email) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+    //db.getCollection('docs').update({ },{'$pull':{ 'items':{'id': 3 }}},{multi:true})
+                    .updateOne(
+                        {teamName: team},
+                        { '$pull': { 'loggedInUsers': {'email': email} }} 
+                    ); 
+        if(result){
+            return true;     
+        }
+        else {
+            return false;
+        }
+};
+
 const findAdminLogin = async (client, collection, adminLogin) => {
     let result = await client.db("woodys_trivia").collection(collection)
                         .findOne({
@@ -208,6 +239,18 @@ const findOneQuestion = async (client, question) => {
         console.log(`No listings found!'`);
         return false;
     }
+};
+
+const updateStartTime = async(client, dt, time) => {
+    let result = await client.db("woodys_trivia").collection("questions")
+                    .updateOne(
+                        {event: 'trivia'},
+                        {$set: {startDate: dt, startTime: time}},
+                        {upsert: true}
+                    );
+
+    console.log(`${result.matchedCount} document(s) matched the query criteria. Start time updated.`);     
+
 };
 
 const updateAllListingsToHavePropertyType = async(client, q_number, q_data) => {
@@ -371,7 +414,41 @@ const getAllTeamScores = async(client) => {
 //update score accordingly
 
 app.post('/post_qs', async (req, res) => {
-    const data = req.body;
+    let data = req.body;
+    /*
+    let timeArr = data.start_date.split('T');
+    let dt = timeArr[0].toString().split('-');
+    let time = timeArr[1];
+    console.log(`Date: ${dt}, Time: ${time}`);
+
+    let yr = Number(dt[0]);
+    let mo = Number(dt[1]);
+    let day = Number(dt[2]);
+    let newDt = `${yr}-${mo}-${day}`;
+    
+    let timeStart = '19:00';
+    */
+    //let newDt = `${data.start_date}T${data.start_time}`
+    //new Date( Date.parse('2012-01-26T13:51:50.417-07:00') )
+    let newDt = new Date(Date.parse(`${data.start_date}`));
+    
+    console.log(newDt);
+    //let stDt = newDate.toDateString();
+/*
+    let date = new Date();
+    //let today = dt.toDateString();
+
+    if(date<newDate){
+    console.log('too early! log in later!');
+    }
+    else {
+    console.log('you can login now!');
+    }
+*/
+
+    /*let d = new Date();
+    let currDate = d.toDateString();
+    let currentDate = d.toLocaleTimeString();*/
 
     let question1 = {q: data.q1, correct: data.correct1, option1: data.option1_q1, option2: data.option2_q1, option3: data.option3_q1, option4: data.option4_q1};
     let question2 = {q: data.q2, correct: data.correct2, option1: data.option1_q2, option2: data.option2_q2, option3: data.option3_q2, option4: data.option4_q2};
@@ -406,7 +483,10 @@ app.post('/post_qs', async (req, res) => {
     try {
         // Connect to the MongoDB cluster
         await client.connect();
+        await updateStartTime(client, data.start_date, data.start_time)
+        .then(
         await updateAllListingsToHavePropertyType(client, 'q1', question1)
+        )
         .then(
             await updateAllListingsToHavePropertyType(client, 'q2', question2)
         )
@@ -596,7 +676,13 @@ app.post('/admin_signin', async(req, res) => {
         let foundAdmin = await findAdminLogin(client, 'admin_login', adminLogin);
 
         if(foundAdmin){
-            res.send(`<p>Welcome, admin! Would you like to Create a Team or Create Questions?</p><br> <a href='/create_team'><button>Create Team</button></a> &nbsp; <a href='/create_questions'><button>Create Questions</button></a>`);
+            res.send(`<p>Welcome, admin! Would you like to Create a Team or Create Questions?</p>
+            <form method='post' action='/create_team'>
+                <button type='submit'>Create Team</button> 
+            </form>
+            <form method='post' action='/create_questions'>
+                <button type='submit'>Create Questions</button>
+            </form>`);
         }
         else {
             res.send(`<p>Login info not found! Try again?</p><br> <a href='/admin_login'><button>Admin Login</button></a>`);
@@ -610,11 +696,11 @@ app.post('/admin_signin', async(req, res) => {
     }
 });
 
-app.get('/create_team', (req, res) => {
+app.post('/create_team', (req, res) => {
     res.render('create_team');
 });
 
-app.get('/create_questions', (req, res) => {
+app.post('/create_questions', (req, res) => {
     res.render('create_questions');
 });
 
@@ -627,7 +713,16 @@ app.get('/user_login', (req, res) => {
 //verified user login
 app.post('/signin', async (req, res) => {
     const data = req.body;
+    //let start;
+    //let strArr;// = start.startDate.split('T');
+    //let startDate; //= strArr[0];
+    //let startTime; //= start.startTime;
+    
     //data.email, data.pw
+    if(req.session.logoutStatus == 'alreadyLoggedOut'){
+        res.render('error');
+    }
+    else {
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
@@ -636,6 +731,13 @@ app.post('/signin', async (req, res) => {
         await client.connect();
 
         let foundUser = await findUserLogin(client, 'teams', data);
+        let start = await findStartTime(client);
+      //  strArr = start.startDate.split('T');
+        //startDate = strArr[0];
+       // startTime = start.startTime;
+        //console.log(`Start date: ${new Date(Date.parse(start.startDate))}, Start time: ${start.startTime}`);
+        console.log(`${start.startDate}T${start.startTime}:00.00-06:00`);
+        req.session.startDate = `${start.startDate}T${start.startTime}:00.00-06:00`;
 
         if(foundUser.captain){
             //res.redirect('/question1');
@@ -725,7 +827,7 @@ app.post('/signin', async (req, res) => {
 
             req.session.userDetails = userObj;
             res.redirect('/find_user');        
-/*
+/*  
             res.send(`<p>Welcome, ${foundUser.name}!  Would you like to start playing trivia? <button onclick="openWin();">Play Trivia</button>
             <script>
             const log = document.getElementById("log");
@@ -752,18 +854,53 @@ app.post('/signin', async (req, res) => {
     } finally {
         await client.close();
     }
+}
 
 });
 
 app.get('/find_user', async(req, res) => {
     //need to query database to find logged in user
     const userDetails = req.session.userDetails;
+    const startDate = req.session.startDate
     res.render('found_user', {
-         userInfo: userDetails
+         userInfo: userDetails,
+         startInfo: startDate
     });
 });
 
-app.get('/questions', async(req, res) => {
+app.get('/logout', async(req, res) => {
+    console.log(req.session.userDetails.email);
+    req.session.logoutStatus = 'alreadyLoggedOut';
+
+    let logOut;
+
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        logOut = await logoutUser(client, req.session.userDetails.triviaTeam, req.session.userDetails.email);
+
+        if(logOut){
+            req.session.questionData = '';
+            res.redirect('/');
+        }
+    }
+    catch (err) {
+        console.error(err);
+    } finally {
+        await client.close();
+    }
+    
+});
+
+app.post('/questions', async(req, res) => {
+
+    if(req.session.logoutStatus == 'alreadyLoggedOut'){
+        res.send('Error: Can\'t join session after logging out!')
+    }
+    else {
+
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
     try {
@@ -792,6 +929,9 @@ app.get('/questions', async(req, res) => {
     } finally {
         await client.close();
     }
+
+}
+    //req.session.triviaStatus = req.body.triviaStatus;
 
 });
 
@@ -997,6 +1137,7 @@ app.post('/get_answer', async(req, res) => {
             outcome = `Sorry, you guessed incorrectly. Minus ${confidence} points.`;
             let newTotal = total - confidence;
             console.log(newTotal);
+            let q_num = req.session.questionNum;
             console.log(team_name, guess, q_num, newTotal);            
             let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
             res.render('answer', {

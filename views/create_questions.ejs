@@ -10,8 +10,15 @@
         </div>
     </header>
 <body>
-    <h2>*If you want a question to be True/False, make sure you include (T/F) in the body of the question and type "True" in the question A slot and "False" in the question B slot!*</h2>
-        <form method="post" action="/post_qs">
+    <h2>*If you want a question to be True/False, make sure you include (T/F) in the body of the question and type "True" in the answer A slot and "False" in the answer B slot!*</h2>
+    <div id="countdown"></div>
+    <button onclick="showTime();">Show Time</button>    
+    <form method="post" action="/post_qs">
+            <label for="start_date">Select Trivia Start Date: </label><br>
+            <input type="date" name="start_date" id="start_date" required/><br><br>
+            <label for="start_time">Select Trivia Start Time: </label><br>
+            <input type="time" name="start_time" id="start_time" required/><br><br>
+
 			<p>Question 1</p>
             <textarea class='question' name='q1'></textarea>
             <select name="correct1" class="correct">
@@ -432,12 +439,12 @@
                 B<input type='text' name='option2_q25' class='answer answer2'>
                 C<input type='text' name='option3_q25' class='answer'>
                 D<input type='text' name='option4_q25' class='answer'>
-                <br>
+                <br><br>
             <!--onsubmit="return Client.handleSubmit();"-->
             <input type="submit" name="sub" id="sub" value="Submit" >
         </form>
         <br>
-        <input type="button" class="retrieve" value="Retrieve" onclick="updateUI();"/>
+        <input type="button" class="retrieve" value="Retrieve Questions/Answers" onclick="updateUI();"/>
 
         <script>
             const questions = document.querySelectorAll(".question");
@@ -446,6 +453,21 @@
             const answer3 = document.querySelectorAll(".answer3");
             const answer4 = document.querySelectorAll(".answer4");
             const correct = document.querySelectorAll(".correct");
+            const start_date = document.getElementById('start_date');
+            const start_time = document.getElementById('start_time');
+
+            const showTime = () => {
+                //console.log(start_date.value);
+                /*
+                const strArr = start_date.value.split('T');
+                const date = strArr[0];
+                const time = strArr[1];
+                */
+                //console.log(`Date: ${date}, Time: ${time}`); 
+                let newDt = new Date(Date.parse(`${start_date.value}T${start_time.value}:00.000-06:00`));
+                console.log(newDt);
+                //example string: 2020-11-24T19:00
+            };
 
             //fetches api responses from local server and acts as execution control for helper functions
             const updateUI = async () => { 
