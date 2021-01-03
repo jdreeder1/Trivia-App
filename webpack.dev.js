@@ -45,7 +45,8 @@ module.exports = {
           '/create_team': 'http://localhost:3330',
           '/get_answer': 'http://localhost:3330',
           '/check_answered': 'http://localhost:3330',
-          'check_if_answered': 'http://localhost:3330'
+          '/check_if_answered': 'http://localhost:3330',
+          '/final_answer': 'http://localhost:3330'
         }
       },
     plugins: [

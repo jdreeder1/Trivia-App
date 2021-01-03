@@ -4,8 +4,7 @@
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
         <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
-      <!--<link href="/styles/base.css" rel="stylesheet" type="text/css"/>-->
-        <link href="/styles/answer_styles.css" rel="stylesheet" type="text/css"/>
+        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         <!--
@@ -30,9 +29,9 @@
             <h2> <%= points %></h2>
             <h3> <%= result %></h3>
 
-            <div class="next_question">
-                <form  method="get" action="/trivia">
-                    <input class="sub" type="submit" value="Next Question" />
+            <div class="final_results">
+                <form  method="post" action="/final_results">
+                    <input class="sub" type="submit" value="Final Results" />
                 </form>
             </div>
             <div class="checkAnswer">
@@ -47,11 +46,11 @@
     </main>
         <script>
             const sub = document.querySelector('.sub');
-            const next_question = document.querySelector('.next_question');
+            const final_results = document.querySelector('.final_results');
             const checkAnswer = document.querySelector('.checkAnswer');
             const teamName = document.querySelector('.team_name');
             const correct = document.querySelector('.correct');
-
+            
             const verifyUser = () => {
                 console.log('<%= user %>', '<%= team %>');
                 if( '<%= user %>' == 'player'){

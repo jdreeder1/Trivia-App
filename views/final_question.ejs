@@ -3,8 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
-        <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
-        <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+        <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         <main>
@@ -12,6 +11,15 @@
                     <% if (login_error) { %>
                         <div class="error"> <%= login_error %> </div>
                     <% } %> 
+
+                    <% if (already_answered) {%>
+                        <div class="error"> <%= already_answered %> </div>    
+                    <% } %>
+
+                    <form class="logout_form" method="get">
+                        <button class="logout_btn" type="submit">Logout</button>
+                    </form>
+
                 <section class="question">
                     <div class="question_content">
                         <h1> <%= team %> </h1>
@@ -30,5 +38,89 @@
                     <input class="sub" type="submit" value="Submit"/>
             </section>
         </main>
+
+        <script>
+            const sub = document.querySelector('.sub');
+            const question_body = document.querySelector('.question_body');
+            const radios = document.querySelectorAll('input[type="radio"]');
+            const confidence = document.getElementById('confidence');
+            const choice1 = document.getElementById('choice1');
+            const choice2 = document.getElementById('choice2');
+            const choice3 = document.getElementById('choice3');
+            const choice4 = document.getElementById('choice4');
+            const option1 = document.getElementById('option1');
+            const option2 = document.getElementById('option2');
+            const player_btn = document.querySelector('.player_btn');
+            const logout_btn = document.querySelector('.logout_btn');
+            const logoutForm = document.querySelector('.logout_form');
+
+            const changeBG = () => {
+                let userChoice = localStorage.getItem('userBG') ;
+                if(userChoice == 'space'){
+                    document.body.style.cssText = "background-image: url('/space.jpg'); color: white";
+                }
+                else if(userChoice == 'desert'){
+                    document.body.style.cssText = "background-image: url('/desert.jpg'); color: white";
+                }
+                else if(userChoice == 'autumn'){
+                    document.body.style.cssText = "background-image: url('/autumn.png'); color: white";
+                }
+                else if(userChoice == 'tropical'){
+                    document.body.style.cssText = "background-image: url('/tropical.jpg'); color: white";
+                }
+                else if(userChoice == 'forest'){
+                    document.body.style.cssText = "background-image: url('/forest.jpg'); color: white";
+                }
+                else if(userChoice == 'city'){
+                    document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
+                }
+                else {
+                    document.body.style.cssText = "background-color: papayawhip; color: white";
+                }
+            };
+
+            localStorage.setItem("user", "<%= typeOfUser %>");
+            localStorage.setItem("team", "<%= team %>");
+
+            const hideSubmit = (typeOfUser, e) => {
+
+                if(typeOfUser == 'player' || localStorage.getItem('user') == 'player'){ 
+                    //sub.style.display = 'none';
+                    console.log(e);
+                }
+            };
+            
+            hideSubmit("<%= typeOfUser %>");
+
+            const trueFalse = () => {
+                //question_body.forEach((q, i=0) => {
+                    if(question_body.innerText.includes('T/F') || question_body.innerText.includes('t/f')){
+                        choice1.value = 't';
+                        choice2.value = 'f';
+                        choice3.style.display = 'none';
+                        choice4.style.display = 'none';
+                        option1.innerText = 'True';
+                        option2.innerText = 'False';
+                    }
+            };
+
+            trueFalse();
+
+            const logout = async(e) => {
+                const logout = confirm('Are you sure you\'d like to logout? If you logout, you won\'t be able to login again during this current trivia session.');
+
+                if(logout){
+                    logoutForm.action = '/';
+                    let logoutUser = await fetch('/logout');                 
+                }
+                else {
+                    e.preventDefault();
+                }
+            };
+
+            window.addEventListener('load', changeBG());
+            logout_btn.addEventListener('click', logout);
+
+        </script>
     </body>
 </html>

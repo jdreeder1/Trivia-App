@@ -30,7 +30,7 @@ app.use(session({
     secret: 'secret-key',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 86400000 }
+    cookie: { maxAge: 43200000 }
 }));
 
 app.use(flash());
@@ -42,7 +42,6 @@ app.set('view engine', 'ejs');
 let hideNextButton = false;
 //let user = '';
 //let triviaTeam = '';
-let currentQuestion;
 let questionDataClone;
 
 //HAVING GLOBAL VARIABLES ON SERVER COULD CAUSE ISSUES IF MULTIPLE TEAMS USE THE SAME PORT or multiple users share the same device!!!
@@ -577,52 +576,6 @@ app.post('/post_qs', async (req, res) => {
      */
 });
 
-app.get('/get_qs', async (req, res) => {
-    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
-
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();
-        let questions = await findQuestions(client);
-        
-        try {
-            questionData = questions;
-            //create element and append!
-           /*
-            let markup = '';
-            questions.forEach((question) => {
-                markup += `${JSON.stringify(question)}`;
-            });
-            //let re = /}{/g;
-            let str = markup.replace(/}{/g, '}~{');
-            let arr = str.split('~');
-        
-            let firstQ = JSON.parse(arr[0]); 
-            */
-            res.send(questions);
-            //console.log(typeof(firstQ));
-             /*
-            let markup = '';
-            for(let i=0; i<questions.length; i++){
-                markup += `<div>Question ${i+1}<br>${questions[i].q}<br>
-                    A.)<span>${questions[i].option1}</span> &nbsp; B.)<span>${questions[i].option2}</span> &nbsp; C.)<span>${questions[i].option3}</span> &nbsp; D.)<span>${questions[i].option4}</span>
-                </div>`;
-            }
-            res.send(`${markup}<br><button>Confirm?</button> &nbsp; <button><a href='src/client/views/create_questions.html'>Go Back</a></button>`);
-        */
-        }
-        catch(err){
-            console.log(err);
-        }
-        
-    }
-    catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-});
-
 app.post('/post_team', async (req, res) => {
     const data = req.body;
     answerArr = [];
@@ -894,7 +847,7 @@ app.get('/logout', async(req, res) => {
     
 });
 
-app.post('/questions', async(req, res) => {
+app.post('/questions', async(req, res) => { 
 
     if(req.session.logoutStatus == 'alreadyLoggedOut'){
         res.send('Error: Can\'t join session after logging out!')
@@ -915,6 +868,7 @@ app.post('/questions', async(req, res) => {
             else {
                 //res.send(findQuestions);
                 req.session.questionData = foundQuestions;
+                req.session.finalQuestion = foundQuestions[foundQuestions.length-2];
                 questionDataClone = JSON.parse(JSON.stringify(foundQuestions));
                 res.redirect('/trivia');
             }
@@ -938,7 +892,8 @@ app.post('/questions', async(req, res) => {
 app.get('/trivia', async(req, res) => {
     //res.send(questionData[0]);  
     //don't need to specify file type ejs b/c already specified ejs as template 
-    currentQuestion = req.session.questionData.shift();
+    
+    let currentQuestion = req.session.questionData.shift();
 
     let index = questionDataClone.findIndex((question) => {
         return question.q == currentQuestion.q;
@@ -949,7 +904,7 @@ app.get('/trivia', async(req, res) => {
     console.log(`Question ${index+1}`);
     if(index+1 <=questionDataClone.length-1){
         res.render('index', {
-            questions: currentQuestion,
+            questions: req.session.currentQuestion,
             typeOfUser: req.session.userDetails.userType,
             team: req.session.userDetails.triviaTeam,
             question_num: index+1,
@@ -960,43 +915,26 @@ app.get('/trivia', async(req, res) => {
     else {
         res.redirect('/wager');
     }
+    
 });
 
 app.get('/final_question', async(req, res) => {
-    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
-
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();
-        //let foundQuestion = await findOneQuestion(client, 'q1');
-        let foundQuestions = await findQuestions(client);
-        try {
-            if(!foundQuestions || foundQuestions == null){
-                res.sendStatus(404);
-            }
-            else {
-                //res.send(findQuestions);
-                let finalQuestion = JSON.parse(JSON.stringify(foundQuestions[24]));
-                res.render('final_question', {
-                    questions: finalQuestion,
-                    typeOfUser: req.session.userDetails.userType,
-                    team: req.session.userDetails.triviaTeam,
-                    question_num: questionDataClone.length,
-                    login_error: req.flash('login_error'),
-                });
-            }
-        }
-        catch(err){
-            res.send(err);
-        }
+    //let finalQuestion = req.session.questionData[req.session.questionDataLength];
+     //console.log(req.session.finalQuestion);
+    
+     try {
+        res.render('final_question', {
+            questions: req.session.finalQuestion,
+            typeOfUser: req.session.userDetails.userType,
+            team: req.session.userDetails.triviaTeam,
+            question_num: questionDataClone.length-1,
+            login_error: req.flash('login_error'),
+            already_answered: req.flash('already_answered')
+        }); 
     }
-
-    catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-
+    catch(err){
+        console.log(err);
+    } 
 });
 
 app.get('/wager', async(req, res) => {
@@ -1039,6 +977,49 @@ app.get('/wager', async(req, res) => {
         teamNames: teamNames,
         teamTotals: teamTotals,
         question_num: req.session.questionNum,
+        login_error: req.flash('login_error')
+    });
+    
+});
+
+app.post('/final_results', async(req, res) => {
+    let teamNames = [];
+    let teamTotals = [];
+    let index;
+
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        let teamScores = await getAllTeamScores(client);
+
+        if(teamScores){
+            for(teams of teamScores){
+                //console.log(`${teams.teamName}: ${teams.runningTotal}`);
+                teamNames.push(teams.teamName);
+                teamTotals.push(teams.runningTotal);
+            }
+            index = teamNames.findIndex(tm => {
+                return tm == req.session.userDetails.triviaTeam; //req.session.userDetails.triviaTeam;
+            });
+        }
+        else {
+            console.log(`Couldn't retrieve teams!`);
+        }
+    }
+    catch (err) {
+        console.log(err);
+    } finally {
+        await client.close();
+    }
+
+    res.render('final_results', {
+        typeOfUser: req.session.userDetails.userType,
+        team: req.session.userDetails.triviaTeam,
+        teamScore: teamTotals[index],
+        teamNames: teamNames,
+        teamTotals: teamTotals,
         login_error: req.flash('login_error')
     });
     
@@ -1121,7 +1102,7 @@ app.post('/get_answer', async(req, res) => {
                 }*/
                 //hideNextButton = false;
                     res.render('answer', {
-                        correctAnswer: currentQuestion.correct,
+                        correctAnswer: req.session.currentQuestion.correct,
                         guessedAnswer: guess,
                         points: confidence,
                         result: outcome,
@@ -1141,7 +1122,7 @@ app.post('/get_answer', async(req, res) => {
             console.log(team_name, guess, q_num, newTotal);            
             let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
             res.render('answer', {
-                correctAnswer: currentQuestion.correct,
+                correctAnswer: req.session.currentQuestion.correct,
                 guessedAnswer: guess,
                 points: confidence,
                 result: outcome,
@@ -1155,7 +1136,7 @@ app.post('/get_answer', async(req, res) => {
         else {
             outcome = `Waiting on captain's answer.`;
             res.render('answer', {
-                correctAnswer: currentQuestion.correct,
+                correctAnswer: req.session.currentQuestion.correct,
                 guessedAnswer: guess,
                 points: confidence,
                 result: outcome,
@@ -1189,7 +1170,7 @@ app.post('/final_answer', async(req, res) => {
     let finalBet;
     let teamInfo;
 
-    let finalQuestion = questionDataClone[questionDataClone.length-1];
+    //let finalQuestion = questionDataClone[questionDataClone.length-1];
 
     console.log(guess, team_name, userType, question_num);
 
@@ -1221,35 +1202,38 @@ app.post('/final_answer', async(req, res) => {
         // Connect to the MongoDB cluster
         await newClient.connect();    
 
-        if(guess == finalQuestion.correct && userType == 'captain'){
-            for(ans of teamInfo.answers){
-                console.log(ans.question, question_num)
-                if(ans.question == question_num){
-                    console.log('already answered question!');
-                    await req.flash('already_answered', 'You\'ve already answered this question!');
-                    res.render('answer', {
-                        correctAnswer: finalQuestion.correct,
-                        guessedAnswer: guess,
-                        points: finalBet,
-                        result: outcome,
-                        user: userType,
-                        team: team_name,
-                        question_num: question_num,
-                        already_answered: req.flash('already_answered')
-                    });
+        if(guess == req.session.finalQuestion.correct && userType == 'captain'){
+            if(teamInfo.lastQuestionAnswered == question_num){
+                console.log('already answered question!');
+                req.flash('already_answered', 'You\'ve already answered the previous question!');
+                res.render('final_answer', {
+                    correctAnswer: req.session.finalQuestion.correct,
+                    guessedAnswer: guess,
+                    points: finalBet,
+                    result: outcome,
+                    user: userType,
+                    team: team_name,
+                    question_num: question_num,
+                    already_answered: req.flash('already_answered')
+                });
+          
                 }
-            else {
-                outcome = `Good job! You guessed correctly and gained ${confidence} points!`;
-                let newTotal = total + finalBet;
-                console.log(newTotal);
-                let q_num = req.session.questionNum;
-                let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
-                //hideNextButton = false;
-                }
-            }
+                else {
+                    outcome = `Good job! You guessed correctly and gained ${finalBet} points!`;
+                    let newTotal = total + finalBet;
+                    console.log(newTotal);
+                    let q_num = req.session.questionNum;
+                    let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
+    
+                  /*  if(typeof teamInfo.lastQuestionAnswered !== 'undefined'){
+                        lastQuestionAnswered = teamInfo.lastQuestionAnswered;
+                    }*/
+                    //hideNextButton = false;
+                       
+                    }
         }
-        else if(guess !== finalQuestion.correct && userType == 'captain') {
-            outcome = `Sorry, you guessed incorrectly. Minus ${confidence} points.`;
+        else if(guess !== req.session.finalQuestion.correct && userType == 'captain') {
+            outcome = `Sorry, you guessed incorrectly. Minus ${finalBet} points.`;
             let newTotal = total - finalBet;
             console.log(newTotal);
             let q_num = req.session.questionNum;
@@ -1268,14 +1252,15 @@ app.post('/final_answer', async(req, res) => {
         await client.close();
     }
 
-    res.render('answer', {
-        correctAnswer: finalQuestion.correct,
+    res.render('final_answer', {
+        correctAnswer: req.session.finalQuestion.correct,
         guessedAnswer: guess,
         points: finalBet,
         result: outcome,
         user: userType,
         team: team_name,
         question_num: question_num,
+        already_answered: req.flash('already_answered')
     });
 });
 
@@ -1347,7 +1332,7 @@ app.post('/final_bet', async(req, res) => {
     const bet = Number(req.body.bet);
     const team = req.body.team;
 
-    req.session.questionNum = 25;
+    req.session.questionNum = questionDataClone.length-1;
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
