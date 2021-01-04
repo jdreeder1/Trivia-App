@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
+        <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    </head>
+<body onload="hideChat();">
+    <main>
+        <h1><%= triviaTeam %></h1>
+        <button type="submit" id="join">Join</button>
+        <div id="team_chat">
+            <div id="chat-window">
+                <div id="output">
+                </div>
+            </div>
+            <input type="text" id="message" placeholder="Message"/>
+            <button type="submit" id="send">Send</button>
+        </div>
+    </main>
+    <script>
+        const socket = io.connect('http://localhost:8888');
+        const team_chat = document.getElementById('team_chat');
+        const chat_window = document.getElementById('chat-window');
+        const output = document.getElementById('output');
+        const message = document.getElementById('message');
+        const join = document.getElementById('join');
+        const send = document.getElementById('send');
+
+        const hideChat = () => {
+            team_chat.style.visibility = 'hidden';
+        }
+
+        const joinChat = () => {
+            socket.emit('joinChat', {
+                team: '<%= triviaTeam %>',
+                handle: '<%= userName %>'
+            });
+
+            join.style.display = 'none';
+            team_chat.style.visibility = 'visible';
+        };
+
+        const sendMsg = () => {
+            //object will contain msg and handle
+            socket.emit('chat', {
+                message: message.value,
+                team: '<%= triviaTeam %>',
+                handle: '<%= userName %>'
+            });
+
+            message.value = '';
+        };
+
+        socket.on('joinChat', (data) => {
+            output.innerHTML += `<p><i>${data.handle} has joined the chat</i></p>`;
+        });
+        //listen for chat from server
+        socket.on('chat', (data) => {
+            output.innerHTML += `<p><strong>${data.handle}:</strong> ${data.message}</p>`; 
+        });
+
+        join.addEventListener('click', joinChat);
+        send.addEventListener('click', sendMsg);
+        window.addEventListener('keydown', (e) => {
+            e.which === 13 ? sendMsg() : -1;
+        });
+
+    </script>
+
+</body>
+</html>

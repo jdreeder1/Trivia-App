@@ -10,6 +10,7 @@ const {MongoClient} = require('mongodb') //use to connect to mongo cluster
 const ejs = require('ejs')
 const session = require('express-session')
 const flash = require('express-flash')
+const socket = require('socket.io')
 //const passport = require('passport')
 
 //const initializePassport = require('./passport-config')
@@ -60,10 +61,34 @@ app.get('/', (req, res) => {
 
 const port = Number(process.env.PORT || 3330);
 // designates what port the app will listen to for incoming requests
-app.listen(port, ()=>{
+const server = app.listen(port, ()=>{
     console.log(`Server running on port ${port}!`);
     console.log('Email port: ', process.env.EMAIL_PORT);
 }); 
+
+//socket setup
+const io = socket(server);
+
+//socket var refers to instance of socket, i.e., connection between new browser and server
+io.on('connection', (socket) => {
+    //const userId = await fetchUserId(socket);
+    socket.on('joinChat', (data) => {
+        socket.join(data.team);
+        console.log(`Joined ${data.team} chat`);
+        io.in(data.team).emit('joinChat', data);    
+    });
+
+    let chatData = {};
+    //listen to msg from client and send out to all clients connected to same port
+    socket.on('chat', (data) => {
+        //io.sockets.emit('chat', data);
+        chatData = data;
+        io.in(data.team).emit('chat', data);
+    });
+
+    //if socket room name exists, join, else create room
+
+});
 
 const listDatabases = async (client) => {
     databasesList = await client.db().admin().listDatabases();
@@ -814,7 +839,10 @@ app.post('/signin', async (req, res) => {
 app.get('/find_user', async(req, res) => {
     //need to query database to find logged in user
     const userDetails = req.session.userDetails;
-    const startDate = req.session.startDate
+    const startDate = req.session.startDate;
+    //const userName = req.session.userDetails.userName;
+    //const triviaTeam = req.session.userDetails.triviaTeam;
+
     res.render('found_user', {
          userInfo: userDetails,
          startInfo: startDate
@@ -845,6 +873,13 @@ app.get('/logout', async(req, res) => {
         await client.close();
     }
     
+});
+
+app.get('/chat', async(req, res) => {
+    res.render('chat-window', {
+        userName: req.session.userDetails.userName,
+        triviaTeam: req.session.userDetails.triviaTeam 
+    });
 });
 
 app.post('/questions', async(req, res) => { 
@@ -1273,10 +1308,10 @@ app.post('/check_answered', async(req, res) => {
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
     try {
-        // Connect to the MongoDB cluster
+        // Connect to the MongoDB cluster 
         await client.connect();
         let findTeam = await findTeamInfo(client, team_name);
-        if(findTeam.answers.length >= question_num){
+        if(findTeam.lastQuestionAnswered >= question_num){
             console.log("Question has been answered.");
             res.redirect('/trivia');
         }

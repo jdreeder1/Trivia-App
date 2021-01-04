@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
         <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
-        <!--<link href="/styles/base.css" rel="stylesheet" type="text/css"/>-->
         <link href="/styles/final_wager_styles.css" rel="stylesheet" type="text/css"/>
+        <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     </head>
     <body>
         <main>
@@ -56,7 +56,7 @@
             for(let x of newArr){
                 markup += `<li style="list-style: none;">${x.name}: ${x.score}</li>`;
             }
-            
+
             scoreboard.insertAdjacentHTML('afterbegin', markup);
 
         </script>
