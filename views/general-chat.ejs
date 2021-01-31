@@ -3,16 +3,12 @@
     <head>
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
-<!--    <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
+        <!--<link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
         <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     </head>
 <body onload="hideChat();">
-    <form class="chat" method="post" action="/general_chat" target="_blank">  
-        <button class="general_chat" type="submit">Join General Chat</button>
-        <input type="hidden" name="userName" value="<%= userName %>"/>
-    </form>
     <main>
-        <h1><%= triviaTeam %></h1>
+        <h1>Woody's Trivia General Chat</h1>
 
         <button type="submit" id="join">Join</button>
         <div id="team_chat">
@@ -32,69 +28,46 @@
         const message = document.getElementById('message');
         const join = document.getElementById('join');
         const send = document.getElementById('send');
-        const general_chat = document.querySelector('.general_chat');
-        const chat = document.querySelector('.chat');
 
         const hideChat = () => {
             team_chat.style.display = 'none';
         }
 
         const joinChat = () => {
-            socket.emit('joinChat', {
-                team: '<%= triviaTeam %>',
-                handle: '<%= userName %>'
+            socket.emit('genChatJoin', {
+                handle: `<%= userName %>`
             });
-
             join.style.display = 'none';
             team_chat.style.display = 'inline-block';
         };
 
         const sendMsg = () => {
             //object will contain msg and handle
-            socket.emit('chat', {
+            socket.emit('generalChat', {
                 message: message.value,
-                team: '<%= triviaTeam %>',
-                handle: '<%= userName %>'
+                handle: `<%= userName %>`
             });
 
             message.value = '';
         };
 
-        socket.on('joinChat', (data) => {
+        socket.on('genChatJoin', (data) => {
+            //output.innerHTML += data;
             let rgx = /<button|<select|<form|<map|<table|<textarea|<input|<video|<ol|<ul|<script|<iframe|<img/gi;
             for(let x of data){
                 let msg = x.replace(rgx, '');
                 output.innerHTML += `<p>${msg}</p>`;
-                /*
-                let para = document.createElement('p');
-                let txt = document.createTextNode(x);
-                para.appendChild(txt);
-                output.appendChild(para);
-                */
             }
         });
         //listen for chat from server
-        socket.on('chat', (data) => {
+        socket.on('generalChat', (data) => {
             let rgx = /<button|<select|<form|<map|<table|<textarea|<input|<video|<ol|<ul|<script|<iframe|<img/gi;
             let newMsg = data.message.replace(rgx, '');
             output.innerHTML += `<p><strong>${data.handle}:</strong> ${newMsg}</p>`; 
-            /*
-            let para = document.createElement('p');
-            let handle = document.createTextNode(data.handle).style.fontWeight = 'bold';
-            let msg = document.createTextNode(data.message);
-            let message = document.createTextNode(`${handle}: ${msg}`);
-            para.appendChild(message); 
-            */
         });
-
-        const open_chat = async(e) => {
-                e.preventDefault();
-                window.open('/general_chat', '_blank');
-            };
 
         join.addEventListener('click', joinChat);
         send.addEventListener('click', sendMsg);
-        //general_chat.addEventListener('click', open_chat);
         window.addEventListener('keydown', (e) => {
             e.which === 13 ? sendMsg() : -1;
         });

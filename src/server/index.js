@@ -70,23 +70,74 @@ const server = app.listen(port, ()=>{
 const io = socket(server);
 
 //socket var refers to instance of socket, i.e., connection between new browser and server
-io.on('connection', (socket) => {
+io.on('connection', async(socket) => {
+    const socketId = socket.id;
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+    
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
     //const userId = await fetchUserId(socket);
-    socket.on('joinChat', (data) => {
-        socket.join(data.team);
-        console.log(`Joined ${data.team} chat`);
-        io.in(data.team).emit('joinChat', data);    
-    });
+        socket.on('joinChat', async(data) => { 
+            socket.join(data.team);
+            let msg = `<i>${data.handle} has joined the chat</i>`;
+            await storeTeamMessages(client, data.team, msg); //NEED TO FIX!
+            let teamInfo = await findTeamInfo(client, data.team);
+            let msgs = teamInfo.chat;
+            //STORE MESSAGES ON TEAM DATABASE AND RETRIEVE WHEN USER PRESSES 'JOIN' ON CLIENT SIDE
+            //console.log(`Joined ${data.team} chat`);
+    //        callback(messages[data.team]);
+            //io.in(data.team).emit('joinChat', msg);
+            io.to(socketId).emit('joinChat', msgs); //send chat history only to new person who joined
+            console.log(msgs);   
+        });
 
-    let chatData = {};
-    //listen to msg from client and send out to all clients connected to same port
-    socket.on('chat', (data) => {
-        //io.sockets.emit('chat', data);
-        chatData = data;
-        io.in(data.team).emit('chat', data);
-    });
+        //listen to msg from client and send out to all clients connected to same port
+        socket.on('chat', async(data) => { 
+            //io.sockets.emit('chat', data);
+            let msg = `<strong>${data.handle}:</strong> ${data.message}`;
+            await storeTeamMessages(client, data.team, msg);
+            io.in(data.team).emit('chat', data);
+        });
 
-    //if socket room name exists, join, else create room
+        socket.on('genChatJoin', async(data) => {
+            socket.join('generalChat');
+            let msg = `<i>${data.handle} has joined the chat</i>`;
+            await storeGeneralChat(client, msg); //NEED TO FIX!
+            let info = await findGeneralChat(client);
+            let msgs = info.generalChat;
+
+            //io.in('generalChat').emit('genChatJoin', msgs);
+
+            io.to(socketId).emit('genChatJoin', msgs); //send chat history only to new person who joined
+
+        });
+
+        socket.on('generalChat', async(data) => {
+            let msg = `<strong>${data.handle}:</strong> ${data.message}`;  
+            await storeGeneralChat(client, msg);
+            io.in('generalChat').emit('generalChat', data); 
+        });        
+
+        socket.on('adminJoin', async(data) => {
+            let msg = `<p><i>${data.handle} has joined the chat</i></p>`;
+            await storeGeneralChat(client, msg);
+            io.sockets.emit(msg);
+        });
+
+        socket.on('adminChat', async(data) => {
+            let teamArr = await findAllTeams(client);
+            let msg = `<p><strong>${data.handle}:</strong> ${data.message}</p>`;
+                for(tm of teamArr){
+                    await storeTeamMessages(client, tm, msg); //NEED TO FIX!
+                    socket.to(tm).emit(data);
+                }
+            //socket.broadcast.emit(data);
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
 
 });
 
@@ -224,6 +275,105 @@ const logoutUser = async(client, team, email) => {
         }
 };
 
+const storeTeamMessages = async(client, team, message) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+                .updateOne(
+                    {teamName: team},
+                    {$push: { chat: message }}   
+                );
+        if(result){
+            console.log('Message stored!');
+        }
+        else {
+            console.log('Unable to store message!');
+        }
+};
+
+const storeGeneralChat = async(client, message) => {
+    let result = await client.db("woodys_trivia").collection("admin_login")
+                .updateOne(
+                        {purpose: "chat"},
+                        {$push: { generalChat: message }}   
+                    );
+        if(result){
+            console.log('Message stored!');
+        }
+        else {
+            console.log('Unable to store message!');
+        }
+};
+
+const findGeneralChat = async(client) => {
+    let result = await client.db("woodys_trivia").collection("admin_login")
+                    .findOne({ purpose: "chat" });
+
+        if (result) {
+        //console.log(`Found a listing in the collection with the name '${nameOfListing}':`);
+        //console.log(result);
+        return result;
+        } else {
+        console.log(`No listings found!'`);
+        return false;
+        }  
+}
+
+const resetTotal = async(client, team) => {
+    //POSSIBLE TO DO ITERATIVE UPDATES?
+    //MIGHT CONSIDER DELETING ALL KEY/VALUES NEED TO RESET - IF UPSET, WILL SHOW UP ANYWAY
+try {
+    let result = await client.db("woodys_trivia").collection("teams")
+    //db.getCollection('docs').update({ },{'$pull':{ 'items':{'id': 3 }}},{multi:true})
+                    .updateOne(
+                        {teamName: team},
+                        {$set: {runningTotal: 15}},
+                        { upsert: true }
+                    );
+        let result2 =  await client.db("woodys_trivia").collection("teams")
+        //db.getCollection('docs').update({ },{'$pull':{ 'items':{'id': 3 }}},{multi:true})
+                        .updateOne(
+                            {teamName: team},
+                            {$set: {finalBet: 0}},
+                            { upsert: true }
+                        );
+        let result3 =  await client.db("woodys_trivia").collection("teams")
+                        .updateOne(
+                            {teamName: team},
+                            {$set: {lastQuestionAnswered: 0}},
+                            { upsert: true }
+                        );
+        let result4 =  await client.db("woodys_trivia").collection("teams")
+                        .updateOne(
+                            {teamName: team},
+                            {$set: {chat: []}},
+                            { upsert: true }
+                        );
+        let result5 =  await client.db("woodys_trivia").collection("admin_login")
+                        .updateOne(
+                            {purpose: "chat"},
+                            {$set: {generalChat: []}},
+                            { upsert: true }
+                        );
+        let result6 =  await client.db("woodys_trivia").collection("teams")
+                        .updateOne(
+                            {teamName: team},
+                            {$set: {loggedInUsers: []}},
+                            { upsert: true }
+                        );
+    }
+    catch(err){
+        console.error(err);
+    }
+            
+};
+/*
+const resetBet = async(client, team) => {
+
+};
+
+const resetQUestionAnswered = async(client, team) => {
+
+};
+*/
 const findAdminLogin = async (client, collection, adminLogin) => {
     let result = await client.db("woodys_trivia").collection(collection)
                         .findOne({
@@ -248,6 +398,22 @@ const findQuestions = async (client) => {
     const results = await cursor.toArray();
 
     return results;
+
+};
+
+const findAllTeams = async (client) => {
+    let cursor = await client.db("woodys_trivia").collection("teams")
+                        .find({});
+
+    const results = await cursor.toArray();
+
+    let teamArr = [];
+
+    for(x of results){
+        teamArr.push(x.teamName);
+    }
+
+    return teamArr;
 
 };
 
@@ -603,10 +769,11 @@ app.post('/post_qs', async (req, res) => {
 
 app.post('/post_team', async (req, res) => {
     const data = req.body;
-    answerArr = [];
-    loggedIn = [];
+    const answerArr = [];
+    const loggedIn = [];
+    const messages = [];
 
-    let teamData = {teamName: data.teamName, captain: data.captain, loggedInUsers: loggedIn, runningTotal: 15, answers: answerArr};
+    let teamData = {teamName: data.teamName, captain: data.captain, loggedInUsers: loggedIn, runningTotal: 15, answers: answerArr, chat: messages};
 
     //make sure team created isn't already in DB, make sure captain email isn't assigned to 2 diff teams
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
@@ -654,13 +821,7 @@ app.post('/admin_signin', async(req, res) => {
         let foundAdmin = await findAdminLogin(client, 'admin_login', adminLogin);
 
         if(foundAdmin){
-            res.send(`<p>Welcome, admin! Would you like to Create a Team or Create Questions?</p>
-            <form method='post' action='/create_team'>
-                <button type='submit'>Create Team</button> 
-            </form>
-            <form method='post' action='/create_questions'>
-                <button type='submit'>Create Questions</button>
-            </form>`);
+            res.render('admin_options');
         }
         else {
             res.send(`<p>Login info not found! Try again?</p><br> <a href='/admin_login'><button>Admin Login</button></a>`);
@@ -681,6 +842,36 @@ app.post('/create_team', (req, res) => {
 app.post('/create_questions', (req, res) => {
     res.render('create_questions');
 });
+
+app.post('/start_trivia', (req, res) => {
+    res.render('monitor_trivia');
+});
+
+app.post('/reset', async(req, res) => {
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        let teamArr = await findAllTeams(client);
+        try {
+            for(tm of teamArr){
+                await resetTotal(client, tm);
+            }
+            res.redirect('/');
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+    catch (e) {
+        console.error(e);
+    } finally {
+        await client.close();
+    }
+});
+
+
 
 app.get('/user_login', (req, res) => {
     res.render('user_signin', { 
@@ -875,6 +1066,13 @@ app.get('/logout', async(req, res) => {
     
 });
 
+app.post('/general_chat', async(req, res) => {
+    //console.log(req.body);
+    res.render('general-chat', {
+        userName: req.body.userName
+    }); 
+});
+
 app.get('/chat', async(req, res) => {
     res.render('chat-window', {
         userName: req.session.userDetails.userName,
@@ -924,6 +1122,19 @@ app.post('/questions', async(req, res) => {
 
 });
 
+app.get('/get_qs', async(req, res) => { 
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+    try {
+        await client.connect();
+
+        let foundQuestions = await findQuestions(client);
+        res.json(foundQuestions);
+    }    
+    catch(err){
+        res.send(err);
+    }
+});
+
 app.get('/trivia', async(req, res) => {
     //res.send(questionData[0]);  
     //don't need to specify file type ejs b/c already specified ejs as template 
@@ -937,7 +1148,7 @@ app.get('/trivia', async(req, res) => {
     req.session.questionNum = index+1;
     req.session.currentQuestion = currentQuestion;
     console.log(`Question ${index+1}`);
-    if(index+1 <=questionDataClone.length-1){
+    if(index+1 <=questionDataClone.length-2){
         res.render('index', {
             questions: req.session.currentQuestion,
             typeOfUser: req.session.userDetails.userType,
@@ -954,9 +1165,7 @@ app.get('/trivia', async(req, res) => {
 });
 
 app.get('/final_question', async(req, res) => {
-    //let finalQuestion = req.session.questionData[req.session.questionDataLength];
-     //console.log(req.session.finalQuestion);
-    
+        
      try {
         res.render('final_question', {
             questions: req.session.finalQuestion,
@@ -1017,7 +1226,7 @@ app.get('/wager', async(req, res) => {
     
 });
 
-app.post('/final_results', async(req, res) => {
+const showScores = async(req, res) => {
     let teamNames = [];
     let teamTotals = [];
     let index;
@@ -1057,7 +1266,13 @@ app.post('/final_results', async(req, res) => {
         teamTotals: teamTotals,
         login_error: req.flash('login_error')
     });
-    
+}
+
+app.post('/final_results', async(req, res) => {
+    await showScores(req, res);
+});
+app.get('/scores', async(req, res) => {
+    await showScores(req, res);
 });
 
 app.post('/get_answer', async(req, res) => {

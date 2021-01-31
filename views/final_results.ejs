@@ -9,6 +9,9 @@
     </head>
     <body>
         <main>
+            <form class="logout_form" method="get">
+                <button class="logout_btn" type="submit">Logout</button>
+            </form>
             <section>
                 <% if (login_error) { %>
                     <div class="error"> <%= login_error %> </div>
@@ -22,9 +25,23 @@
         </main>
         <script>
             const scoreboard = document.querySelector('.scoreboard');
+            const logout_btn = document.querySelector('.logout_btn');
+            const logoutForm = document.querySelector('.logout_form');
             let teamNames = '<%= teamNames %>'.split(',');
             let teamTotals = '<%= teamTotals %>'.split(',');
             let markup = '';
+
+            const logout = async(e) => {
+                const logout = confirm('Are you sure you\'d like to logout? If you logout, you won\'t be able to login again during this current trivia session.');
+
+                if(logout){
+                    logoutForm.action = '/';
+                    let logoutUser = await fetch('/logout');                 
+                }
+                else {
+                    e.preventDefault();
+                }
+            };
 
             let arr = [];
 
@@ -48,6 +65,7 @@
             console.log(newArr);
 
             scoreboard.insertAdjacentHTML('afterbegin', markup);
+            logout_btn.addEventListener('click', logout);
             
         </script>
     </body>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+    </head>
+    <body>
+        <main class="answers">
+            
+        </main>
+        <button class="retrieve">Pull Answers</button><br>
+
+        <form class="reset_form" method="post">
+            <button type="submit" class="reset">Reset Totals</button>
+        </form>
+        <form class="chat" method="post" action="/general_chat" target="_blank">
+            <button class="open_chat" type="submit">Open Chat</button>
+            <input type="hidden" name="userName" value="Admin"/>
+        </form>
+        <script>
+            const answers = document.querySelector('.answers');
+            const retrieve = document.querySelector('.retrieve');
+            const reset_form = document.querySelector('.reset_form');
+            const reset = document.querySelector('.reset');
+            const openChat = document.querySelector('.open_chat');
+
+            const updateUI = async () => { 
+
+                const res = await fetch(`/get_qs`);
+                try {
+                    //form.classList.add('hide');
+                    const resp = await res.text();
+                    try {
+                        let parsed = JSON.parse(resp);
+                        let fragment = document.createDocumentFragment(); 
+                        for(let x of parsed){
+                            i=1;
+                            let para = document.createElement('p');
+                            para.innerText = `${x.question}: ${x.q} Correct: ${x.correct} A: ${x.option1} B: ${x.option2} C: ${x.option3} D: ${x.option4}`;
+                            fragment.appendChild(para);
+                            i++
+                        }
+                        answers.appendChild(fragment);
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                }
+                catch(error){
+                    console.log(error);
+                }
+            };
+
+            const resetTotals = async(e) => {
+                const re_set = confirm(`Are you sure you'd like to reset totals? If you confirm, all teams' logged-in users, running totals, final bets, last-question-answered values, and chats will reset to their original values.`);
+                if(re_set){
+                    reset_form.action = '/reset';
+                }
+                else {
+                    e.preventDefault();
+                }
+            };
+/*
+            const open_chat = async(e) => {
+                window.open('/admin_chat', '_blank');
+            };
+*/
+            retrieve.addEventListener('click', updateUI);
+            reset.addEventListener('click', resetTotals);
+            //openChat.addEventListener('click', open_chat);
+
+        </script>
+    
+    </body>
+    </html>

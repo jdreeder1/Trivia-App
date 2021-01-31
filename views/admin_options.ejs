@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Woody's Tuesday Night Trivia</title>
+        <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <p>Welcome, admin! Would you like to Create a Team, Create Questions, or Start Trivia?</p>
+            <form method='post' action='/create_team'>
+                <button type='submit'>Create Team</button> 
+            </form> <br>
+            <form method='post' action='/create_questions'>
+                <button type='submit'>Create Questions</button>
+            </form> <br>
+            <form method='post' action='/start_trivia'>
+                <button type='submit'>Start Trivia</button>
+            </form>           
+    </body>
+</html>

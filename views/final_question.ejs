@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
         <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
-        <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     </head>
     <body>
         <main>
@@ -17,9 +16,15 @@
                         <div class="error"> <%= already_answered %> </div>    
                     <% } %>
 
-                    <form class="logout_form" method="get">
-                        <button class="logout_btn" type="submit">Logout</button>
-                    </form>
+            <nav class="user_options">            
+                <form class="logout_form" method="get">
+                    <button class="logout_btn" type="submit">Logout</button>
+                </form>
+        
+                <form class="chat" method="get">
+                    <button class="open_chat" type="submit">Open Chat</button>
+                </form>
+            </nav>
 
                 <section class="question">
                     <div class="question_content">
@@ -54,6 +59,7 @@
             const player_btn = document.querySelector('.player_btn');
             const logout_btn = document.querySelector('.logout_btn');
             const logoutForm = document.querySelector('.logout_form');
+            const chat = document.querySelector('.chat');
 
             const changeBG = () => {
                 let userChoice = localStorage.getItem('userBG') ;
@@ -119,6 +125,11 @@
                 }
             };
 
+            const open_chat = async() => {
+                window.open('/chat', '_blank');
+            };
+
+            chat.addEventListener('click', open_chat);
             window.addEventListener('load', changeBG());
             logout_btn.addEventListener('click', logout);
 
