@@ -37,7 +37,7 @@ module.exports = {
       },
     plugins: [
         new HtmlWebPackPlugin({
-            template: "./src/client/views/login.html",
+            template: "./views/login.ejs",
             filename: "./login.html",
         }),
         //new WorkboxPlugin.GenerateSW(),
