@@ -12,12 +12,13 @@
                 <h1>Welcome, <%= userInfo.userName %>!</h1>
                     <h2 id="message"></h2>
 
-                 <h1>Start Time: </h1>
+                 <h1 id="begin">Start Time: </h1>
                  <h2 id="start"></h2>
             </section>
         </main>
             <script>
                 const message = document.getElementById('message');
+                const begin = document.getElementById('begin');
 
                 if( '<%= userInfo.userType %>' == 'captain'){
                     message.innerText = 'You are a captain for this game!';
@@ -73,6 +74,10 @@
                 //bracket notation gives access to the value in the obj's key-value pair
                 return `${parts[part]} ${part}`;
                 }).join(" ");
+            }
+
+            if(difference <= 0) {
+                begin.style.display = 'none';
             }
 
             document.getElementById("start").innerHTML = remaining;

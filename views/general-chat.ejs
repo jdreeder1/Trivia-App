@@ -4,21 +4,46 @@
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
         <!--<link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
+        <link href="/styles/chat_styles.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+        <style>
+            .area {
+                background: #0f9b0f;  
+                background: -webkit-linear-gradient(to left, #000000,#0f9b0f); 
+            }
+        </style>
     </head>
 <body onload="hideChat();">
     <main>
-        <h1>Woody's Trivia General Chat</h1>
+        <div class="area">
+            <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
 
+    <div id="chat_area">
+        <h1>Woody's Trivia General Chat</h1>
         <button type="submit" id="join">Join</button>
         <div id="team_chat">
             <div id="chat-window">
                 <div id="output">
                 </div>
             </div>
-            <input type="text" id="message" placeholder="Message"/>
-            <button type="submit" id="send">Send</button>
+            <div id="chat_foot">
+                <input type="text" id="message" placeholder="Message"/>
+                <button type="submit" id="send">Send</button>
+            </div>
         </div>
+    </div>
     </main>
     <script>
         const socket = io.connect('http://localhost:8888');

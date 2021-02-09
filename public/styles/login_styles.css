@@ -1,11 +1,13 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: papayawhip;
+    color: white;
+    background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);
 }
 .logo {
     width: 100%;
-    background-color: bisque;
+    background: none;
+    /*background-image: url('/wood-grain.jpg');*/
 }
 .container {
     display: grid;

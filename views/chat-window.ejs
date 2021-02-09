@@ -3,26 +3,70 @@
     <head>
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
-<!--    <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
+        <link href="/styles/chat_styles.css" rel="stylesheet" type="text/css"/>
+        <link href="/styles/nav_styles.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+        <style>
+            .general_chat {
+                background: none!important;
+                border: none;
+                padding: 0!important;
+                font-family: 'Comic Sans', cursive;
+                font-size: 1.05em;
+                /*optional
+                font-family: arial, sans-serif;
+                input has OS specific font-family*/
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            .title, .nav {
+                top: 50vh;
+            }
+
+        </style>
     </head>
 <body onload="hideChat();">
-    <form class="chat" method="post" action="/general_chat" target="_blank">  
-        <button class="general_chat" type="submit">Join General Chat</button>
-        <input type="hidden" name="userName" value="<%= userName %>"/>
-    </form>
     <main>
-        <h1><%= triviaTeam %></h1>
-
-        <button type="submit" id="join">Join</button>
+        <div class="area">
+            <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div> 
+        <div id="chat_area">
+            <div class="menu" onmouseover="hide_title();" onmouseleave="show_title();">
+                <div class="title">&laquo;</div>
+                <ul class="nav">
+                    <li>
+                        <form class="chat" method="post" action="/general_chat" target="_blank">  
+                            <button class="general_chat" type="submit">Join General Chat</button>
+                            <input type="hidden" name="userName" value="<%= userName %>"/>
+                        </form>
+                    </li>
+                </ul>
+            </div>            
+            <h1><%= triviaTeam %></h1>
+            <button type="submit" id="join">Join</button>
         <div id="team_chat">
             <div id="chat-window">
                 <div id="output">
                 </div>
             </div>
-            <input type="text" id="message" placeholder="Message"/>
-            <button type="submit" id="send">Send</button>
+            <div id="chat_foot">
+                <input type="text" id="message" placeholder="Message"/>
+                <button type="submit" id="send">Send</button>
+            </div>
         </div>
+        </div>        
     </main>
     <script>
         const socket = io.connect('http://localhost:8888');
@@ -34,6 +78,7 @@
         const send = document.getElementById('send');
         const general_chat = document.querySelector('.general_chat');
         const chat = document.querySelector('.chat');
+        const title = document.querySelector('.title');
 
         const hideChat = () => {
             team_chat.style.display = 'none';
@@ -91,6 +136,14 @@
                 e.preventDefault();
                 window.open('/general_chat', '_blank');
             };
+
+        const hide_title = () => {
+            title.style.display = 'none';
+            //title.classList.toggle('toggle');
+        };
+        const show_title = () => {
+            title.style.display = 'block';
+        };
 
         join.addEventListener('click', joinChat);
         send.addEventListener('click', sendMsg);

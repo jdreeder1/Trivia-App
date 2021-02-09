@@ -1,0 +1,59 @@
+.toggle {
+    display: none;
+}
+.menu {
+      font-weight: 100;
+      width: 150px;
+      height: 100%;
+      padding-left: 50px;
+      position: fixed;
+      z-index: 100;
+      /*-webkit-box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);*/
+      /*box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);*/
+      right: -130px;
+      transition: all 200ms;
+      color: white;
+}
+.menu:hover, menu:focus {
+    transform: translate3d(-130px, 0, 0);
+    animation-timing-function: 1s ease-in;
+  }
+.title {
+    top:40vh;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    position: absolute;
+    left: 10px;
+    font-weight: 800;
+    font-size: 4em;
+}
+.nav {
+    position: absolute;
+    top: 40vh;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    font-weight: 100;
+    color: white;
+}
+.nav li {
+    padding-bottom: 30px;
+    list-style-type: none;
+}
+.nav a, .logout_btn {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: all 200ms;
+    background: none;
+    border: none;
+}
+.logout_btn {
+    font-size: inherit;
+    padding: 0;
+}
+.nav a:hover, .nav button:hover, .logout_btn:hover {
+    -webkit-text-stroke: 0.75px gold;
+    cursor: pointer;
+}

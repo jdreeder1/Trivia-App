@@ -15,6 +15,9 @@
     <body>
         <main class="container">
         <h2 class="adminLogin">Admin Login</h2>
+        <% if(lgnError) { %>
+            <div class="error"> <%= lgnError %> </div>
+        <% } %> 
         <form class="admin_signin" method="post" action="/admin_signin">
             <label for="adminUsername">Input email</label><br>
             <input class="adminUsername" name="adminUsername" type="email" placeholder="john.doe@gmail.com" required/><br>
@@ -33,7 +36,7 @@
                 <option value="science">science</option>
                 <option value="coffee">coffee</option>
             </select><br><br>
-            <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.handleAdmin()"/>
+            <input type="submit" class="submitButton" value="Submit"/>
         </form>
         </main>
         <!--

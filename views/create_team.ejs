@@ -2,21 +2,55 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <title>Woody's Trivia</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Woody's Tuesday Night Trivia</title>
+        <!--<link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <style>
+            body {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+            .row1 {
+                height: 25vh;
+            }
+            .form-group {
+                font-size: 1.25em;;
+            }
+        </style>
     </head>
-    <header>
-        <div class="logo">
-            Trivia
-        </div>
-    </header>
     <body>
+        <div class="row1">
+            <% if(exists) { %>
+                <div class="exists"> <%= exists %> </div>
+            <% } %> 
+            <% if(created) { %>
+                <div class="created"> <%= created %> </div>
+            <% } %> 
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+                <div class="col-md-4">
         <h2 class="adminLogin">Create Team</h2>
-        <form method="post" action="/post_team">
-            <label for="teamName">Enter team name: </label> <br>
-            <input type="text" name="teamName" placeholder="Trivia Team" required /> <br><br>
-            <label for="captain">Enter team captain's email address: </label> <br>        
-            <input type="email" name="captain" placeholder="john.doe@email.com" required /> <br><br>           
-            <input type="submit" class="submitButton" value="Submit" onsubmit="return Client.createTeam()"/>
-        </form>
+            <div class="form-group">
+            <form method="post" action="/post_team">
+                <label for="teamName">Enter team name: </label> <br>
+                <input type="text" class="form-control" name="teamName" placeholder="Trivia Team" required /> <br><br>
+                <label for="captain">Enter team captain's email address: </label> <br>        
+                <input type="email" class="form-control" name="captain" placeholder="john.doe@email.com" required /> <br><br>           
+                <input type="submit" class="submitButton btn btn-success btn-lg btn-block" value="Submit"/>
+            </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <form method="post" action="/admin_home">
+                        <input type="submit" class="submitButton btn btn-primary btn-lg btn-block" value="Admin Home"/>      
+                    </form>
+                </div>
+        </div>
+
     </body>
 </html>

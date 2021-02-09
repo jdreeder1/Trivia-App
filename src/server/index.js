@@ -749,10 +749,12 @@ app.post('/post_qs', async (req, res) => {
         .then(
             await updateAllListingsToHavePropertyType(client, 'q25', question25)
         )
+        .then(
+            res.render('create_questions')
+        )
         .catch(
             err => console.log(err)
         )
-        
     }
     catch (e) {
         console.error(e);
@@ -773,7 +775,7 @@ app.post('/post_team', async (req, res) => {
     const loggedIn = [];
     const messages = [];
 
-    let teamData = {teamName: data.teamName, captain: data.captain, loggedInUsers: loggedIn, runningTotal: 15, answers: answerArr, chat: messages};
+    let teamData = {teamName: data.teamName, captain: data.captain, finalBet: 0, lastQuestionAnswered: 0, loggedInUsers: loggedIn, runningTotal: 15, answers: answerArr, chat: messages};
 
     //make sure team created isn't already in DB, make sure captain email isn't assigned to 2 diff teams
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
@@ -787,11 +789,22 @@ app.post('/post_team', async (req, res) => {
         let foundTeam = await findOneListingByName(client, 'teams', teamData.teamName);
 
         if(foundTeam){
-            res.send(`<p>Team already exists! Create a different team!</p><br> <a href='src/client/views/create_team.html'<button>Go Back</button></a>`);
+            //res.send(`<p>Team already exists! Create a different team!</p><br> 
+            //<a href='src/client/views/create_team.html'<button>Go Back</button></a>`);
+            req.flash('team_exists', 'Team already exists! Create a different team!')
+            res.render('create_team', {
+                exists: req.flash('team_exists'),
+                created: ''    
+            });
         }
         else {
+            req.flash('team_created', 'New team created!')
             await createListing(client, 'teams', teamData);
-            res.send(`<p>New team created! Create another team?</p><br> <a href='src/client/views/create_team.html'<button>Create Another Team</button></a>`);
+            res.render('create_team', {
+                exists: '',
+                created: req.flash('team_created')
+            });
+            //res.send(`<p>New team created! Create another team?</p><br> <a href='src/client/views/create_team.html'<button>Create Another Team</button></a>`);
         }
     }
 
@@ -804,7 +817,11 @@ app.post('/post_team', async (req, res) => {
 });
 
 app.get('/admin_login', async(req, res) => {
-    res.render('admin_login');
+    
+    res.render('admin_login', {
+        lgnError: req.flash('loginError')
+    });
+    
 });
 
 app.post('/admin_signin', async(req, res) => {
@@ -821,11 +838,15 @@ app.post('/admin_signin', async(req, res) => {
         let foundAdmin = await findAdminLogin(client, 'admin_login', adminLogin);
 
         if(foundAdmin){
+            req.session.adminStatus = true;
             res.render('admin_options');
         }
         else {
-            res.send(`<p>Login info not found! Try again?</p><br> <a href='/admin_login'><button>Admin Login</button></a>`);
+            req.flash('loginError', 'Invalid login information!');
+            res.redirect('/admin_login');
         }
+            
+            //res.send(`<p>Login info not found! Try again?</p><br> <a href='/admin_login'><button>Admin Login</button></a>`);
     }
 
     catch (e) {
@@ -835,8 +856,15 @@ app.post('/admin_signin', async(req, res) => {
     }
 });
 
+app.post('/admin_home', async(req, res) => {
+    res.render('admin_options');
+});
+
 app.post('/create_team', (req, res) => {
-    res.render('create_team');
+    res.render('create_team', {
+        exists: '',
+        created: ''
+    });
 });
 
 app.post('/create_questions', (req, res) => {
@@ -992,10 +1020,32 @@ app.post('/signin', async (req, res) => {
                 triviaTeam: foundUser.team,
                 email: foundUser.email
             };
-            await updateLoggedInUser(client, foundUser.team, userObj);
-
+            
             req.session.userDetails = userObj;
-            res.redirect('/find_user');        
+
+            let loggedIn = await updateLoggedInUser(client, foundUser.team, userObj);
+            console.log(loggedIn);
+
+            if(loggedIn.length === 0){
+                let addLogin = await addLoggedInUser(client, foundUser.team, userObj);                
+                //req.session.userDetails = userObj;
+                res.redirect('/find_user');
+            }
+            else {
+                req.session.loginStatus = 'logged in';
+                req.flash('login_error', 'You\'re already logged in!');
+                req.flash('already_answered', 'You\'ve already answered the previous question!');
+                //let backURL=req.header('Referer'); // || '/';
+               // if(typeof questionDataClone !== 'undefined' && req.session.questionNum <=questionDataClone.length-1 || typeof questionDataClone == 'undefined' && req.session.questionNum <= 24){
+                    res.render('index', {
+                        questions: req.session.currentQuestion,
+                        typeOfUser: req.session.userDetails.userType,
+                        team: req.session.userDetails.triviaTeam,
+                        question_num: req.session.questionNum, 
+                        login_error: req.flash('login_error'),
+                        already_answered: req.flash('already_answered')
+                    });
+                }       
 /*  
             res.send(`<p>Welcome, ${foundUser.name}!  Would you like to start playing trivia? <button onclick="openWin();">Play Trivia</button>
             <script>
@@ -1123,16 +1173,23 @@ app.post('/questions', async(req, res) => {
 });
 
 app.get('/get_qs', async(req, res) => { 
-    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
-    try {
-        await client.connect();
 
-        let foundQuestions = await findQuestions(client);
-        res.json(foundQuestions);
-    }    
-    catch(err){
-        res.send(err);
+    if(req.session.adminStatus == true){
+        const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+        try {
+            await client.connect();
+
+            let foundQuestions = await findQuestions(client);
+            res.json(foundQuestions);
+        }    
+        catch(err){
+            res.send(err);
+        }
     }
+    else {
+        res.sendStatus(404);
+    }
+    
 });
 
 app.get('/trivia', async(req, res) => {
@@ -1266,7 +1323,7 @@ const showScores = async(req, res) => {
         teamTotals: teamTotals,
         login_error: req.flash('login_error')
     });
-}
+} 
 
 app.post('/final_results', async(req, res) => {
     await showScores(req, res);

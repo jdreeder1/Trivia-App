@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Woody's Tuesday Night Trivia</title>
         <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
+        <link href="/styles/nav_styles.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
     <main>
@@ -15,20 +16,18 @@
             <% if (already_answered) {%>
                 <div class="error"> <%= already_answered %> </div>    
             <% } %>
-
-    <nav class="user_options">            
-        <form class="logout_form" method="get">
-            <button class="logout_btn" type="submit">Logout</button>
-        </form>
-
-        <form class="chat" method="get">
-            <button class="open_chat" type="submit">Open Chat</button>
-        </form>
-        <form class="score" method="get">
-            <button class="get_score" type="submit">Check Scores</button>
-        </form>
-    </nav>
-            
+    <div class="menu" onmouseover="hide_title();" onmouseleave="show_title();">
+        <div class="title">&laquo;</div>
+        <ul class="nav">
+            <li><a href="#" onclick="open_chat();">Open Chat</a></li>
+            <li><a class="get_score" href="#" onclick="open_score();">Check Scores</a></li>
+            <li>
+                <form class="logout_form" method="get">
+                    <button class="logout_btn" type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>  
         <section class="question">
             <div class="question_content">
                 <h1> <%= team %> </h1>
@@ -78,6 +77,8 @@
         const logoutForm = document.querySelector('.logout_form');
         const chat = document.querySelector('.chat');
         const get_score = document.querySelector('.get_score');
+        const menu = document.querySelector('.menu');
+        const title = document.querySelector('.title');
 
         const changeBG = () => {
             let userChoice = localStorage.getItem('userBG') ;
@@ -149,19 +150,22 @@
             };
 
             const open_chat = async(e) => {
-                e.preventDefault();
                 window.open('/chat', '_blank');
             };
 
             const open_score = async(e) => {
-                e.preventDefault();
                 window.open('/scores', '_blank');
             }
+            const hide_title = () => {
+                title.style.display = 'none';
+                //title.classList.toggle('toggle');
+            };
+            const show_title = () => {
+                title.style.display = 'block';
+            };
 
             window.addEventListener('load', changeBG());
             logout_btn.addEventListener('click', logout);
-            chat.addEventListener('click', open_chat);
-            get_score.addEventListener('click', open_score);
 
         </script>
 

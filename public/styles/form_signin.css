@@ -1,7 +1,8 @@
 body {
-    background-color: papayawhip;
     margin: 0;
     padding: 0;
+    color: white;
+    background-image: url('/wood-grain.jpg');
     max-height: 100vh;
     overflow: hidden;
 }
@@ -25,7 +26,9 @@ body {
 
 .logo {
     width: 100%;
-    background-color: bisque;
+    color: white;
+    /*background-color: bisque;*/
+    background: none;
 }
 
 label {

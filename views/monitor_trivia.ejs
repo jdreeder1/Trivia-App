@@ -2,30 +2,67 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Woody's Tuesday Night Trivia</title>
+        <!--<link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <style>
+            body {
+                max-width: 100%; overflow-x: hidden; 
+            }
+            .row {
+                height: 10vh;
+            }
+            .row1 {
+                margin-top: 20vh;
+            }
+            /*.answers {
+                margin-top: -13vh;
+            }*/
+        </style>
     </head>
     <body>
-        <main class="answers">
-            
-        </main>
-        <button class="retrieve">Pull Answers</button><br>
-
-        <form class="reset_form" method="post">
-            <button type="submit" class="reset">Reset Totals</button>
-        </form>
-        <form class="chat" method="post" action="/general_chat" target="_blank">
-            <button class="open_chat" type="submit">Open Chat</button>
-            <input type="hidden" name="userName" value="Admin"/>
-        </form>
+            <nav class="navbar fixed-top navbar-light bg-light">
+                <button class="retrieve btn btn-outline-secondary">Pull Answers</button>
+                <form method="post" action="/admin_home">
+                    <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-arrow-left-square"></i></button>
+                </form>
+                <form class="reset_form" method="post" action="/reset">
+                    <button type="submit" class="reset btn btn-outline-secondary">Reset Totals</button>
+                </form>
+                <form method="get" action="/">
+                    <button type="submit" class="btn btn-outline-secondary"> <i class="bi bi-house"></i></button>
+                </form>
+                <form class="chat" method="post" action="/general_chat" target="_blank">
+                    <button class="open_chat btn btn-outline-secondary" type="submit">Open Chat</button>
+                    <input type="hidden" name="userName" value="Admin"/>
+                </form>
+              </nav>
+        <div class="row"></div>
+        <div class="row align-top">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6">
+                <main class="answers"></main>
+            </div> 
+        </div> 
+        <div class="row row1">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <h3 id="intro">Welcome, admin! Would you like to Pull Answers, Reset Totals, or Open Chat?</h3>
+            </div>
+        </div>       
         <script>
             const answers = document.querySelector('.answers');
             const retrieve = document.querySelector('.retrieve');
             const reset_form = document.querySelector('.reset_form');
             const reset = document.querySelector('.reset');
             const openChat = document.querySelector('.open_chat');
+            const intro = document.getElementById('intro');
 
             const updateUI = async () => { 
-
+                hide_intro();
                 const res = await fetch(`/get_qs`);
                 try {
                     //form.classList.add('hide');
@@ -60,6 +97,10 @@
                     e.preventDefault();
                 }
             };
+
+            const hide_intro = () => {
+                intro.style.display = 'none';
+            }
 /*
             const open_chat = async(e) => {
                 window.open('/admin_chat', '_blank');

@@ -6,12 +6,18 @@
         <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
         <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                color: white;
+                background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);    
+            }
+        </style>
+
     </head>
     <body>
         <main>
-            <form class="logout_form" method="get">
-                <button class="logout_btn" type="submit">Logout</button>
-            </form>
             <section>
                 <% if (login_error) { %>
                     <div class="error"> <%= login_error %> </div>
@@ -30,18 +36,6 @@
             let teamNames = '<%= teamNames %>'.split(',');
             let teamTotals = '<%= teamTotals %>'.split(',');
             let markup = '';
-
-            const logout = async(e) => {
-                const logout = confirm('Are you sure you\'d like to logout? If you logout, you won\'t be able to login again during this current trivia session.');
-
-                if(logout){
-                    logoutForm.action = '/';
-                    let logoutUser = await fetch('/logout');                 
-                }
-                else {
-                    e.preventDefault();
-                }
-            };
 
             let arr = [];
 
@@ -62,10 +56,7 @@
                 markup += `<li style="list-style: none;">${x.name}: ${x.score}</li>`;
             }
 
-            console.log(newArr);
-
             scoreboard.insertAdjacentHTML('afterbegin', markup);
-            logout_btn.addEventListener('click', logout);
             
         </script>
     </body>
