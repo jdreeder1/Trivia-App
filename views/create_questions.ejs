@@ -3,11 +3,19 @@
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
         <title>Trivia</title>
         <style>
             body {
                 padding-left: 5vw;
                 padding-right: 5vw;
+            }
+            .row1 {
+                font-size: 2em;
+                position: fixed;
+                right: 5vw;
+                top: 0;
+                cursor: pointer;  
             }    
         </style>
     </head>
@@ -17,6 +25,14 @@
         </div>
     </header>
 <body>
+    <div class="row1">
+        <form method="get" action="/">
+            <button type="submit" class="btn btn-outline-secondary"> <i class="bi bi-house"></i></button>
+        </form>
+        <form method="post" action="/admin_home">
+            <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-arrow-left-square"></i></button>
+        </form>
+    </div>
     <h2>*If you want a question to be True/False, make sure you include (T/F) in the body of the question and type "True" in the answer A slot and "False" in the answer B slot!*</h2>
     <div id="countdown"></div>
     <form method="post" action="/post_qs">

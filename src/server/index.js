@@ -11,6 +11,7 @@ const ejs = require('ejs')
 const session = require('express-session')
 const flash = require('express-flash')
 const socket = require('socket.io')
+const limiter = require('express-rate-limit')
 //const passport = require('passport')
 
 //const initializePassport = require('./passport-config')
@@ -1657,13 +1658,18 @@ app.post('/final_bet', async(req, res) => {
         await client.close();
     }
 });
-/*
-app.get('/show_score', async(req, res) => {
-    
-});
-*/
+
+const registerLimiter = limiter({
+    windowMs: 1000 * 60 * 5,
+    max: 1, 
+    message: {
+        code: 429,
+        message: 'Reached limit! Too many requests!'
+    },
+})
+
 //newUser signup
-app.post('/validate', async (req, res) => {
+app.post('/validate', registerLimiter, async (req, res) => {
     let data = req.body;
     let home = req.body.homepage;
     let d = new Date();
