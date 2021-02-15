@@ -2,7 +2,8 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: papayawhip;
+    color: white;
+    background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);
 }
 
 main {

@@ -129,7 +129,7 @@ io.on('connection', async(socket) => {
         socket.on('adminChat', async(data) => {
             let teamArr = await findAllTeams(client);
             let msg = `<p><strong>${data.handle}:</strong> ${data.message}</p>`;
-                for(tm of teamArr){
+                for(let tm of teamArr){
                     await storeTeamMessages(client, tm, msg); //NEED TO FIX!
                     socket.to(tm).emit(data);
                 }
@@ -410,7 +410,7 @@ const findAllTeams = async (client) => {
 
     let teamArr = [];
 
-    for(x of results){
+    for(let x of results){
         teamArr.push(x.teamName);
     }
 
@@ -884,7 +884,7 @@ app.post('/reset', async(req, res) => {
         await client.connect();
         let teamArr = await findAllTeams(client);
         try {
-            for(tm of teamArr){
+            for(let tm of teamArr){
                 await resetTotal(client, tm);
             }
             res.redirect('/');
@@ -1193,6 +1193,25 @@ app.get('/get_qs', async(req, res) => {
     
 });
 
+app.get('/standings', async(req, res) => {
+    if(req.session.adminStatus == true){
+        const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+        try {
+            await client.connect();
+
+            let teams = await getAllTeamScores(client);
+            res.json(teams);
+        }
+        catch (err) {
+            //console.log(err);
+            res.send(err)
+        } 
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
+
 app.get('/trivia', async(req, res) => {
     //res.send(questionData[0]);  
     //don't need to specify file type ejs b/c already specified ejs as template 
@@ -1223,20 +1242,24 @@ app.get('/trivia', async(req, res) => {
 });
 
 app.get('/final_question', async(req, res) => {
-        
-     try {
-        res.render('final_question', {
-            questions: req.session.finalQuestion,
-            typeOfUser: req.session.userDetails.userType,
-            team: req.session.userDetails.triviaTeam,
-            question_num: questionDataClone.length-1,
-            login_error: req.flash('login_error'),
-            already_answered: req.flash('already_answered')
-        }); 
+    if (req.session.questionNum == questionDataClone.length - 1){       
+        try {
+            res.render('final_question', {
+                questions: req.session.finalQuestion,
+                typeOfUser: req.session.userDetails.userType,
+                team: req.session.userDetails.triviaTeam,
+                question_num: questionDataClone.length-1,
+                login_error: req.flash('login_error'),
+                already_answered: req.flash('already_answered')
+            }); 
+        }
+        catch(err){
+            console.log(err);
+        } 
     }
-    catch(err){
-        console.log(err);
-    } 
+    else { 
+        res.sendStatus(404);
+    }
 });
 
 app.get('/wager', async(req, res) => {
@@ -1244,7 +1267,7 @@ app.get('/wager', async(req, res) => {
     let teamNames = [];
     let teamTotals = [];
     let index;
-
+if (req.session.questionNum == questionDataClone.length - 1){       
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
     try {
@@ -1253,7 +1276,7 @@ app.get('/wager', async(req, res) => {
         let teamScores = await getAllTeamScores(client);
 
         if(teamScores){
-            for(teams of teamScores){
+            for(let teams of teamScores){
                 //console.log(`${teams.teamName}: ${teams.runningTotal}`);
                 teamNames.push(teams.teamName);
                 teamTotals.push(teams.runningTotal);
@@ -1281,6 +1304,10 @@ app.get('/wager', async(req, res) => {
         question_num: req.session.questionNum,
         login_error: req.flash('login_error')
     });
+}
+else {
+    res.sendStatus(404);
+}
     
 });
 
@@ -1297,7 +1324,7 @@ const showScores = async(req, res) => {
         let teamScores = await getAllTeamScores(client);
 
         if(teamScores){
-            for(teams of teamScores){
+            for(let teams of teamScores){
                 //console.log(`${teams.teamName}: ${teams.runningTotal}`);
                 teamNames.push(teams.teamName);
                 teamTotals.push(teams.runningTotal);

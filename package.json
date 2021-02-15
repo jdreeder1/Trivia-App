@@ -31,6 +31,9 @@
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",

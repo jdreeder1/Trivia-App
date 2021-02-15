@@ -31,6 +31,7 @@
                 <form class="reset_form" method="post" action="/reset">
                     <button type="submit" class="reset btn btn-outline-secondary">Reset Totals</button>
                 </form>
+                    <button type="submit" class="standings btn btn-outline-secondary">Show Standings</button>
                 <form method="get" action="/">
                     <button type="submit" class="btn btn-outline-secondary"> <i class="bi bi-house"></i></button>
                 </form>
@@ -45,12 +46,13 @@
             </div>
             <div class="col-md-6">
                 <main class="answers"></main>
+                <div class="results"></div>
             </div> 
         </div> 
         <div class="row row1">
             <div class="col-md-3"></div>
             <div class="col-md-6">
-                <h3 id="intro">Welcome, admin! Would you like to Pull Answers, Reset Totals, or Open Chat?</h3>
+                <h3 id="intro">Welcome, admin! Would you like to Pull Answers, Reset Totals, Show Standings or Open Chat?</h3>
             </div>
         </div>       
         <script>
@@ -60,9 +62,11 @@
             const reset = document.querySelector('.reset');
             const openChat = document.querySelector('.open_chat');
             const intro = document.getElementById('intro');
+            const results = document.querySelector('.results');
+            const standings = document.querySelector('.standings');
 
             const updateUI = async () => { 
-                hide_intro();
+                hide_intro(); hide_body();                
                 const res = await fetch(`/get_qs`);
                 try {
                     //form.classList.add('hide');
@@ -88,6 +92,31 @@
                 }
             };
 
+            const showStandings = async () => {
+                hide_intro(); hide_body();                
+                const res = await fetch(`/standings`);
+                try {
+                    //form.classList.add('hide');
+                    const resp = await res.text();
+                    try {
+                        let parsed = JSON.parse(resp);
+                        let fragment = document.createDocumentFragment();
+                        for(let x of parsed){
+                            let para = document.createElement('p');
+                            para.innerText = `${x.teamName} - Points: ${x.runningTotal} Last Question Answered: ${x.lastQuestionAnswered}`;
+                            fragment.appendChild(para);
+                        }
+                        results.appendChild(fragment);
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                }
+                catch(error){
+                    console.log(error)
+                }
+            }
+
             const resetTotals = async(e) => {
                 const re_set = confirm(`Are you sure you'd like to reset totals? If you confirm, all teams' logged-in users, running totals, final bets, last-question-answered values, and chats will reset to their original values.`);
                 if(re_set){
@@ -101,6 +130,10 @@
             const hide_intro = () => {
                 intro.style.display = 'none';
             }
+            const hide_body = () => {
+                answers.innerHTML = '';
+                results.innerHTML = '';
+            };
 /*
             const open_chat = async(e) => {
                 window.open('/admin_chat', '_blank');
@@ -108,6 +141,7 @@
 */
             retrieve.addEventListener('click', updateUI);
             reset.addEventListener('click', resetTotals);
+            standings.addEventListener('click', showStandings);
             //openChat.addEventListener('click', open_chat);
 
         </script>
