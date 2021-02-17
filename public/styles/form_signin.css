@@ -56,20 +56,43 @@ input[type='email'], input[type='password'], select {
     grid-column: 2;
 }
 
-@media(max-width: 1400px){
+@media only screen and (max-width: 1200px) {
+    .logo {
+        font-size: 6em;
+    }
+    body {
+        overflow-y: visible;
+    }
+    .container {
+        display: grid;
+        grid-template-rows: repeat(2, 40vh);
+        grid-template-columns: 5vw 90vw 5vw;
+        margin-top: 10vh;
+    }
     .signin {
-        font-size: 1.75em;
+        display: inline;
+    }
+    label[for=email], label[for=pw], label[for=theme] {
+        grid-column: 2;
+        width: 100%;
+    }
+    input[type='email'], input[type='password'], select {
+        grid-column: 2;
+        height: 30px;
+        width: 100%;
+    }
+    .buttons {
+        margin-top: 10vh;
+        grid-column: 2;
+        width: 100%;
     }
 }
 
-@media(max-width: 1200px){
-    .signin {
-        width: 60vw;
+@media only screen and (max-width: 922px) {
+    .logo {
+        font-size: 4em;
     }
-}
-
-@media(max-width: 1050px){
-    .signin {
-        font-size: 1.5em;
+    .container {
+        margin-top: 15vh;
     }
 }

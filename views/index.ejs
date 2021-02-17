@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Woody's Tuesday Night Trivia</title>
         <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
         <link href="/styles/nav_styles.css" rel="stylesheet" type="text/css"/>
@@ -22,9 +23,9 @@
             <li><a href="#" onclick="open_chat();">Open Chat</a></li>
             <li><a class="get_score" href="#" onclick="open_score();">Check Scores</a></li>
             <li>
-                <form class="logout_form" method="get">
+               <form class="logout_form" method="get">
                     <button class="logout_btn" type="submit">Logout</button>
-                </form>
+               </form>
             </li>
         </ul>
     </div>  
@@ -141,8 +142,8 @@
                 const logout = confirm('Are you sure you\'d like to logout? If you logout, you won\'t be able to login again during this current trivia session.');
 
                 if(logout){
-                    logoutForm.action = '/';
-                    let logoutUser = await fetch('/logout');                 
+                    logoutForm.action = "/";
+                   await fetch('/logout');
                 }
                 else {
                     e.preventDefault();

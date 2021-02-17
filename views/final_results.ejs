@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Woody's Tuesday Night Trivia</title>
         <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
         <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
@@ -12,6 +13,15 @@
                 padding: 0;
                 color: white;
                 background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);    
+            }
+            @media only screen and (max-width: 1200px){
+                main {
+                    display: grid;
+                    grid-template-columns: 20vw 60vw 20vw;
+                    grid-template-rows: 100vh;
+                    justify-content: center;
+                    align-items: center;
+                }
             }
         </style>
 

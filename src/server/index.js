@@ -1106,7 +1106,9 @@ app.get('/logout', async(req, res) => {
 
         if(logOut){
             req.session.questionData = '';
+            //res.send(true);
             res.redirect('/');
+            //res.render('login');
         }
     }
     catch (err) {
@@ -1557,7 +1559,7 @@ app.post('/final_answer', async(req, res) => {
                     outcome = `Good job! You guessed correctly and gained ${finalBet} points!`;
                     let newTotal = total + finalBet;
                     console.log(newTotal);
-                    let q_num = req.session.questionNum;
+                    let q_num = req.session.questionNum; 
                     let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
     
                   /*  if(typeof teamInfo.lastQuestionAnswered !== 'undefined'){

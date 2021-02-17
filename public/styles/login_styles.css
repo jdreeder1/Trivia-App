@@ -15,3 +15,34 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+@media only screen and (max-width: 1200px){
+    .acctCreate input, .acctLogin input {
+        width: 100%;
+        font-size: 1.25em;
+    }
+    main {
+        display: grid;
+        grid-template-columns: 20vw 60vw 20vw;
+        justify-content: center;
+        align-items: center;
+    }
+    .container {
+        display: grid;
+        grid-template-rows: repeat(3, minmax(33vh, auto));
+        justify-content: center;
+        align-items: center;
+    } 
+    .acctLogin {
+        margin-top: -10vh;
+    }
+}
+
+@media only screen and (max-width: 922px){
+    main {
+        display: grid;
+        grid-template-columns: 5vw 90vw 5vw;
+        justify-content: center;
+        align-items: center;
+    }
+}
