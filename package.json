@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/server/index.js",
     "watch": "nodemon src/server/index.js",
-    "build-prod": "webpack --config webpack.prod.js",
+    "build": "webpack --config webpack.prod.js",
     "build-dev": "webpack-dev-server  --config webpack.dev.js --open"
   },
   "keywords": [],
@@ -22,11 +22,8 @@
     "express-rate-limit": "^5.2.5",
     "express-session": "^1.17.1",
     "mongodb": "^3.6.2",
-    "nedb": "^1.8.0",
     "nodemailer": "^6.4.13",
     "nodemon": "^2.0.4",
-    "passport": "^0.4.1",
-    "passport-local": "^1.0.0",
     "socket.io": "^3.0.4",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"

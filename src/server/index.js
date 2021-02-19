@@ -1554,7 +1554,7 @@ app.post('/final_answer', async(req, res) => {
                     already_answered: req.flash('already_answered')
                 });
           
-                }
+                } 
                 else {
                     outcome = `Good job! You guessed correctly and gained ${finalBet} points!`;
                     let newTotal = total + finalBet;
