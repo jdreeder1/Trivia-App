@@ -54,6 +54,7 @@
                 </select> 
                 <input type="hidden" name="teamName" value="<%= team %>"/> <input type="hidden" name="userType" value="<%= typeOfUser %>" /> &nbsp; 
                 <input type="hidden" name="question_num" value="<%= question_num %>"/>
+                <input type="hidden" name="finalAnswer" value="no"/>
                 <input class="sub" type="submit" value="Submit"/>
             </div>
             </form>    
@@ -102,7 +103,7 @@
                 document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
             }
             else {
-                document.body.style.cssText = "background-color: papayawhip; color: white";
+                document.body.style.cssText = "background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%); color: white;";
             }
         };
 

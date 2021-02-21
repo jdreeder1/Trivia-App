@@ -29,6 +29,9 @@
                     <input type="hidden" name="team" value="<%= team %>"/> 
                     <button id="betSumbit" type="submit">Submit</button>
                 </form>
+                <form id="next_q" method="POST" action="/final_bet">
+                    <button id="finalQ" type="submit">Final Question</button> 
+                </form>
             </section>
         </main>
         <script>
@@ -36,6 +39,7 @@
             const final_bet = document.getElementById('final_bet');  
             const bet = document.getElementById('bet');
             const betSubmit = document.getElementById('betSubmit');
+            const next_q = document.getElementById('next_q');
             let teamNames = '<%= teamNames %>'.split(',');
             let teamTotals = '<%= teamTotals %>'.split(',');
             let markup = '';
@@ -59,7 +63,18 @@
                 markup += `<li style="list-style: none;">${x.name}: ${x.score}</li>`;
             }
 
+            const determineUserOption = () => {
+                if('<%=typeOfUser %>' == 'captain'){
+                    next_q.style.display = 'none';
+                }
+                else {
+                    final_bet.style.display = 'none';
+                }
+            }
+            
+
             scoreboard.insertAdjacentHTML('afterbegin', markup);
+            window.addEventListener('load', determineUserOption);
 
         </script>
     </body>

@@ -51,6 +51,7 @@
                 <form  method="post" action="/check_answered">
                     <input type="hidden" name="teamName" value="<%= team %>"/>
                     <input type="hidden" name="question_num" value="<%= question_num %>"/>
+                    <input type="hidden" name="finalAnswer" value="yes"/>
                     <input class="check" type="submit" value="Check"/>
                 </form>
             </div>
@@ -65,12 +66,13 @@
             
             const verifyUser = () => {
                 console.log('<%= user %>', '<%= team %>');
-                if( '<%= user %>' == 'player'){
-                    next_question.style.display = 'none';
+                if( '<%= user %>' == 'player' && '<%= lastQ %>' == ''){
                     correct.style.display = 'none';
+                    final_results.style.display = 'none';
                 }
-                else if('<%= user %>' == 'captain'){
-                    checkAnswer.style.display = 'none';
+                else if('<%= user %>' == 'player' && '<%= lastQ %>' !== ''){
+                    //next_question.style.display = 'none';
+                    checkAnswer.style.display = 'none';                    
                 }
             }
 
@@ -97,7 +99,7 @@
                     document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
                 }
                 else {
-                    document.body.style.cssText = "background-color: papayawhip; color: white";
+                    document.body.style.cssText = "background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%); color: white;";
                 }
             };
 

@@ -6,6 +6,15 @@
         <title>Woody's Tuesday Night Trivia</title>
         <link href="https://fonts.googleapis.com/css2?family=Modak&display=swap" rel="stylesheet">
         <link href="/styles/base.css" rel="stylesheet" type="text/css"/>
+        <style>
+            section {
+                display: grid;
+                grid-template-columns: 20vw 60vw 20vw;
+            }
+            h1, .checkAnswer {
+                grid-column: 2;
+            }
+        </style>
     </head>
     <body>
         <!--
@@ -50,7 +59,7 @@
                 document.body.style.cssText = "background-image: url('/city.jpg'); color: white";
             }
             else {
-                document.body.style.cssText = "background-color: papayawhip; color: white";
+                document.body.style.cssText = "background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%); color: white;";
             }
         };
 

@@ -322,42 +322,48 @@ const resetTotal = async(client, team) => {
     //POSSIBLE TO DO ITERATIVE UPDATES?
     //MIGHT CONSIDER DELETING ALL KEY/VALUES NEED TO RESET - IF UPSET, WILL SHOW UP ANYWAY
 try {
-    let result = await client.db("woodys_trivia").collection("teams")
+        await client.db("woodys_trivia").collection("teams")
     //db.getCollection('docs').update({ },{'$pull':{ 'items':{'id': 3 }}},{multi:true})
                     .updateOne(
                         {teamName: team},
                         {$set: {runningTotal: 15}},
                         { upsert: true }
                     );
-        let result2 =  await client.db("woodys_trivia").collection("teams")
+        await client.db("woodys_trivia").collection("teams")
         //db.getCollection('docs').update({ },{'$pull':{ 'items':{'id': 3 }}},{multi:true})
                         .updateOne(
                             {teamName: team},
                             {$set: {finalBet: 0}},
                             { upsert: true }
                         );
-        let result3 =  await client.db("woodys_trivia").collection("teams")
+        await client.db("woodys_trivia").collection("teams")
                         .updateOne(
                             {teamName: team},
                             {$set: {lastQuestionAnswered: 0}},
                             { upsert: true }
                         );
-        let result4 =  await client.db("woodys_trivia").collection("teams")
+        await client.db("woodys_trivia").collection("teams")
                         .updateOne(
                             {teamName: team},
                             {$set: {chat: []}},
                             { upsert: true }
                         );
-        let result5 =  await client.db("woodys_trivia").collection("admin_login")
+        await client.db("woodys_trivia").collection("admin_login")
                         .updateOne(
                             {purpose: "chat"},
                             {$set: {generalChat: []}},
                             { upsert: true }
                         );
-        let result6 =  await client.db("woodys_trivia").collection("teams")
+        await client.db("woodys_trivia").collection("teams")
                         .updateOne(
                             {teamName: team},
                             {$set: {loggedInUsers: []}},
+                            { upsert: true }
+                        );
+        await client.db("woodys_trivia").collection("teams")
+                        .updateOne(
+                            {teamName: team},
+                            {$set: {finalAnswer: ""}},
                             { upsert: true }
                         );
     }
@@ -366,15 +372,7 @@ try {
     }
             
 };
-/*
-const resetBet = async(client, team) => {
 
-};
-
-const resetQUestionAnswered = async(client, team) => {
-
-};
-*/
 const findAdminLogin = async (client, collection, adminLogin) => {
     let result = await client.db("woodys_trivia").collection(collection)
                         .findOne({
@@ -477,6 +475,17 @@ const submitFinalBet = async(client, team, bet) => {
                     .updateOne(
                         {teamName: team},
                         { $set: {finalBet: bet}},
+                        {upsert: true}
+                    );
+
+        console.log(`${result.matchedCount} document(s) matched the query criteria. Final bet sumbitted.`);     
+
+};
+const submitFinalAnswer = async(client, team, answer) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+                    .updateOne(
+                        {teamName: team},
+                        { $set: {finalAnswer: answer}},
                         {upsert: true}
                     );
 
@@ -772,11 +781,10 @@ app.post('/post_qs', async (req, res) => {
 
 app.post('/post_team', async (req, res) => {
     const data = req.body;
-    const answerArr = [];
     const loggedIn = [];
     const messages = [];
 
-    let teamData = {teamName: data.teamName, captain: data.captain, finalBet: 0, lastQuestionAnswered: 0, loggedInUsers: loggedIn, runningTotal: 15, answers: answerArr, chat: messages};
+    let teamData = {teamName: data.teamName, captain: data.captain, finalBet: 0, lastQuestionAnswered: 0, loggedInUsers: loggedIn, runningTotal: 15, finalAnswer: '', chat: messages};
 
     //make sure team created isn't already in DB, make sure captain email isn't assigned to 2 diff teams
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
@@ -1156,6 +1164,7 @@ app.post('/questions', async(req, res) => {
                 req.session.questionData = foundQuestions;
                 req.session.finalQuestion = foundQuestions[foundQuestions.length-2];
                 questionDataClone = JSON.parse(JSON.stringify(foundQuestions));
+                console.log(`Question length: ${questionDataClone.length}`);
                 res.redirect('/trivia');
             }
         }
@@ -1290,7 +1299,7 @@ if (req.session.questionNum == questionDataClone.length - 1){
         else {
             console.log(`Couldn't retrieve teams!`);
         }
-    }
+    } 
     catch (err) {
         console.log(err);
     } finally {
@@ -1502,10 +1511,12 @@ app.post('/final_answer', async(req, res) => {
     const team_name = req.body.teamName;
     const userType = req.body.userType;
     const question_num = req.body.question_num;
+    const finalAnswer = req.body.finalAnswer;
     let outcome = '';
     let total;
     let finalBet;
     let teamInfo;
+    let finalGuess;
 
     //let finalQuestion = questionDataClone[questionDataClone.length-1];
 
@@ -1516,11 +1527,16 @@ app.post('/final_answer', async(req, res) => {
     try {
         // Connect to the MongoDB cluster
         await client.connect();
-    
+
+        if(userType == 'captain'){
+            let subAnswer = await submitFinalAnswer(client, team_name, guess);
+        } 
+        //MAKE SURE RETRIEVE FINAL ANSWER WORKS FOR PLAYER!!
         teamInfo = await findTeamInfo(client, team_name);
         try {
             total = teamInfo.runningTotal;
             finalBet = teamInfo.finalBet;
+            finalGuess = teamInfo.finalAnswer;
         }
         catch(err){
             console.log(err);
@@ -1551,6 +1567,7 @@ app.post('/final_answer', async(req, res) => {
                     user: userType,
                     team: team_name,
                     question_num: question_num,
+                    lastQ: finalGuess,
                     already_answered: req.flash('already_answered')
                 });
           
@@ -1597,6 +1614,7 @@ app.post('/final_answer', async(req, res) => {
         user: userType,
         team: team_name,
         question_num: question_num,
+        lastQ: finalGuess,
         already_answered: req.flash('already_answered')
     });
 });
@@ -1605,20 +1623,60 @@ app.post('/check_answered', async(req, res) => {
     //res.send(hideNextButton);
     const team_name = req.body.teamName;
     const question_num = req.body.question_num;
-    console.log(team_name);
+    let outcome = '';
+    let total;
+    let finalBet;
+    let findTeam;
+    let guess;
+    //questionDataClone.length - 1;
+    //console.log(team_name);
+    console.log(`This is question number ${question_num}, questionDataClone length-1: ${questionDataClone.length-1}`);
+
+    //KEEP GETTING ERROR 404 WHEN PLAYER HITS 'GET RESULTS' AFTER FINAL QUESTION
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
-
+    //if question_num == finalAnswer
     try {
         // Connect to the MongoDB cluster 
         await client.connect();
-        let findTeam = await findTeamInfo(client, team_name);
-        if(findTeam.lastQuestionAnswered >= question_num){
+        findTeam = await findTeamInfo(client, team_name);
+        total = findTeam.runningTotal;
+        finalBet = findTeam.finalBet;
+        guess = findTeam.finalAnswer;
+
+        console.log(guess);
+        if(findTeam.lastQuestionAnswered >= question_num && guess == '' && question_num == questionDataClone.length-1){
+            console.log('captain has not answered final question'); 
+            res.render('check_if_answered', {
+                teamName: team_name, 
+                questionNum: question_num
+            });
+        }
+        else if(findTeam.lastQuestionAnswered >= question_num && guess !== ''){ 
+            if(guess == req.session.finalQuestion.correct){
+                outcome = `Good job! You guessed correctly and gained ${finalBet} points!`;
+            }
+            else {
+                outcome = `Sorry, you guessed incorrectly. Minus ${finalBet} points.`;
+            }
+                res.render('final_answer', {
+                    correctAnswer: req.session.finalQuestion.correct,
+                    guessedAnswer: guess,
+                    points: finalBet,
+                    result: outcome,
+                    user: req.session.userDetails.userType,
+                    team: team_name,
+                    lastQ: guess,
+                    question_num: question_num,
+                    already_answered: ''
+                });
+        }
+        else if(findTeam.lastQuestionAnswered >= question_num && guess == '' && question_num !== questionDataClone.length-1){
             console.log("Question has been answered.");
             res.redirect('/trivia');
-        }
+        } 
         else {
-            console.log("Captain has not answered question.");
+            console.log('captain has not answered'); 
             res.render('check_if_answered', {
                 teamName: team_name,
                 questionNum: question_num
@@ -1673,19 +1731,25 @@ app.post('/final_bet', async(req, res) => {
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();    
-        let submitBet = await submitFinalBet(client, team, bet);   
-        
-        res.redirect('/final_question');
+    if(req.session.userDetails.userType == 'captain'){
+        try {
+            // Connect to the MongoDB cluster
+            await client.connect();    
+            let submitBet = await submitFinalBet(client, team, bet);   
+            
+            res.redirect('/final_question');
+        }
+        catch(err){
+            console.log(err);
+        } 
+        finally {
+            await client.close();
+        }
     }
-    catch(err){
-        console.log(err);
-    } 
-    finally {
-        await client.close();
+    else {
+        res.redirect('/final_question');     
     }
+    
 });
 
 const registerLimiter = limiter({
