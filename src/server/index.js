@@ -1382,6 +1382,7 @@ app.post('/get_answer', async(req, res) => {
     let total;
     let teamInfo;
     let lastQuestionAnswered;
+    let options = [req.session.currentQuestion.option1, req.session.currentQuestion.option2, req.session.currentQuestion.option3, req.session.currentQuestion.option4];
 
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
@@ -1421,19 +1422,6 @@ app.post('/get_answer', async(req, res) => {
                     console.log('already answered question!');
                     await req.flash('already_answered', 'You\'ve already answered the previous question!');
                     res.redirect('/trivia');
-                    //res.end();
-                    /*
-                    res.render('answer', {
-                        correctAnswer: req.session.currentQuestion,
-                        guessedAnswer: guess,
-                        points: confidence,
-                        result: outcome,
-                        user: userType,
-                        team: team_name,
-                        question_num: question_num,
-                        already_answered: req.flash('already_answered')
-                    });
-                    */
                 
             }
             else {
@@ -1443,10 +1431,6 @@ app.post('/get_answer', async(req, res) => {
                 let q_num = req.session.questionNum;
                 let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
 
-              /*  if(typeof teamInfo.lastQuestionAnswered !== 'undefined'){
-                    lastQuestionAnswered = teamInfo.lastQuestionAnswered;
-                }*/
-                //hideNextButton = false;
                     res.render('answer', {
                         correctAnswer: req.session.currentQuestion.correct,
                         guessedAnswer: guess,
@@ -1455,6 +1439,7 @@ app.post('/get_answer', async(req, res) => {
                         user: userType,
                         team: team_name,
                         question_num: question_num,
+                        choices: options,
                         already_answered: req.flash('already_answered')
                     });
                 }
@@ -1475,6 +1460,7 @@ app.post('/get_answer', async(req, res) => {
                 user: userType,
                 team: team_name,
                 question_num: question_num,
+                choices: options,
                 already_answered: req.flash('already_answered')
             });
             //hideNextButton = false;
@@ -1489,6 +1475,7 @@ app.post('/get_answer', async(req, res) => {
                 user: userType,
                 team: team_name,
                 question_num: question_num,
+                choices: options,
                 already_answered: req.flash('already_answered')
             });
             //hideNextButton = true;
@@ -1517,6 +1504,7 @@ app.post('/final_answer', async(req, res) => {
     let finalBet;
     let teamInfo;
     let finalGuess;
+    let options = [req.session.finalQuestion.option1, req.session.finalQuestion.option2, req.session.finalQuestion.option3, req.session.finalQuestion.option4];
 
     //let finalQuestion = questionDataClone[questionDataClone.length-1];
 
@@ -1568,6 +1556,7 @@ app.post('/final_answer', async(req, res) => {
                     team: team_name,
                     question_num: question_num,
                     lastQ: finalGuess,
+                    choices: options,
                     already_answered: req.flash('already_answered')
                 });
           
@@ -1578,11 +1567,6 @@ app.post('/final_answer', async(req, res) => {
                     console.log(newTotal);
                     let q_num = req.session.questionNum; 
                     let teamScore = await updateTeamScore(newClient, team_name, guess, q_num, newTotal);
-    
-                  /*  if(typeof teamInfo.lastQuestionAnswered !== 'undefined'){
-                        lastQuestionAnswered = teamInfo.lastQuestionAnswered;
-                    }*/
-                    //hideNextButton = false;
                        
                     }
         }
@@ -1615,6 +1599,7 @@ app.post('/final_answer', async(req, res) => {
         team: team_name,
         question_num: question_num,
         lastQ: finalGuess,
+        choices: options, //UPDATE ON CLIENT-SIDE!
         already_answered: req.flash('already_answered')
     });
 });
@@ -1628,6 +1613,7 @@ app.post('/check_answered', async(req, res) => {
     let finalBet;
     let findTeam;
     let guess;
+    let options = [req.session.finalQuestion.option1, req.session.finalQuestion.option2, req.session.finalQuestion.option3, req.session.finalQuestion.option4];
     //questionDataClone.length - 1;
     //console.log(team_name);
     console.log(`This is question number ${question_num}, questionDataClone length-1: ${questionDataClone.length-1}`);
@@ -1667,6 +1653,7 @@ app.post('/check_answered', async(req, res) => {
                     user: req.session.userDetails.userType,
                     team: team_name,
                     lastQ: guess,
+                    choices: options, //UPDATE ON CLIENT-SIDE!
                     question_num: question_num,
                     already_answered: ''
                 });
