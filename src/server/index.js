@@ -575,6 +575,23 @@ const updateTeamAnswer = async(client, team, guess, q_num) => {
         
 };
 
+const adjustTeamScore = async(client, team, num_points) => {
+    let result = await client.db("woodys_trivia").collection("teams")
+                    .updateOne(
+                        {teamName: team}, 
+                        {$set:
+                            {runningTotal : num_points}
+                        },
+                        {upsert: true}
+                    );
+        if(result){                    
+            console.log(`${result.matchedCount} document(s) matched the query criteria. Score updated.`);
+        }
+        else{
+            console.log('Error - could not update team score.');
+        }
+};
+
 //NEED TO UPDATE ANSWER FIELD FOR CORRECT QUESTION!
 const updateTeamScore = async(client, team, guess, q_num, num_points) => {
     let result = await client.db("woodys_trivia").collection("teams")
@@ -883,6 +900,34 @@ app.post('/create_questions', (req, res) => {
 app.post('/start_trivia', (req, res) => {
     res.render('monitor_trivia');
 });
+
+app.post('/adjust_points', async(req, res) => {
+    console.log(req.body.points);
+    let points = Number(req.body.points);
+    let team = req.body.team;
+
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+        let tm = await findTeamInfo(client, team);
+        let adjustment = tm.runningTotal + points;
+        try {
+            await adjustTeamScore(client, team, adjustment);
+            res.render('monitor_trivia');
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+    catch(error){
+        console.log(error);
+    }
+    finally {
+        await client.close();
+    }
+})
 
 app.post('/reset', async(req, res) => {
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });

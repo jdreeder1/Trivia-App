@@ -52,6 +52,15 @@
 .logout_btn {
     font-size: inherit;
     padding: 0;
+    text-shadow:
+        0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
 }
 .nav a:hover, .nav button:hover, .logout_btn:hover {
     -webkit-text-stroke: 0.75px gold;

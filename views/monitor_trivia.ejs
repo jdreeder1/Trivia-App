@@ -17,17 +17,20 @@
             .row1 {
                 margin-top: 20vh;
             }
-            /*.answers {
-                margin-top: -13vh;
-            }*/
+            #mySelect {
+                width: 80%;
+                height: 40px;
+            }
+            .subTeam {
+                margin-top: -5px;
+                margin-left: 2px;
+            }
         </style>
     </head>
     <body>
             <nav class="navbar fixed-top navbar-light bg-light">
                 <button class="retrieve btn btn-outline-secondary">Pull Answers</button>
-                <form method="post" action="/admin_home">
-                    <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-arrow-left-square"></i></button>
-                </form>
+                <button type="submit" class="update btn btn-outline-secondary">Update Scores</button>
                 <form class="reset_form" method="post" action="/reset">
                     <button type="submit" class="reset btn btn-outline-secondary">Reset Totals</button>
                 </form>
@@ -42,9 +45,9 @@
               </nav>
         <div class="row"></div>
         <div class="row align-top">
-            <div class="col-md-3">
+            <div class="col-md-4">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <main class="answers"></main>
                 <div class="results"></div>
             </div> 
@@ -64,6 +67,12 @@
             const intro = document.getElementById('intro');
             const results = document.querySelector('.results');
             const standings = document.querySelector('.standings');
+            const update = document.querySelector('.update');
+            const selectList = document.createElement('select');
+            selectList.id = 'mySelect';
+            const btn = document.createElement('button');
+            let teamInfo = [];
+            
 
             const updateUI = async () => { 
                 hide_intro(); hide_body();                
@@ -117,6 +126,58 @@
                 }
             }
 
+            const updateScores = async() => {
+                hide_intro(); hide_body(); 
+                const res = await fetch(`/standings`);
+                try {
+                    //form.classList.add('hide');
+                    const resp = await res.text();
+                    try {
+                        teamInfo = JSON.parse(resp);
+                        //let fragment = document.createDocumentFragment();
+                        btn.setAttribute('type', 'submit');
+                        btn.setAttribute('class', 'subTeam btn btn-outline-secondary');
+                        btn.innerText = 'Pick Team';
+
+                        selectList.innerHTML = '';
+                        
+                        for(let x of teamInfo){
+                            let option = document.createElement('option');
+                            option.value = teamInfo.indexOf(x);
+                            option.text = x.teamName;
+                            selectList.appendChild(option);
+                        }
+                        answers.appendChild(selectList);
+                        answers.appendChild(btn);
+                        
+                    }
+                    catch(err){
+                        console.log(err);
+                    }               
+                }
+                catch(error){
+                    console.log(error);
+                }
+
+            }
+
+            const selectTeam = () => {
+                    let pickedTeam = mySelect.options[mySelect.selectedIndex].value;
+
+                    console.log(pickedTeam);
+
+                    answers.innerHTML = `
+                    <h4>${teamInfo[pickedTeam].teamName}'s current score is ${teamInfo[pickedTeam].runningTotal}. How much you like to add or subtract from their score?</h4>
+                            <form method="post" action="adjust_points" style="margin-top: 40px;">
+                                <div style="display: inline-block;">
+                                    <input type="number" style="height: 40px;" class="adjustPoints" name="points" min="-${teamInfo[pickedTeam].runningTotal}" max="${teamInfo[pickedTeam].runningTotal}">
+                                    <input type="hidden" name="team" value="${teamInfo[pickedTeam].teamName}"/>
+                                    <button class="btn btn-outline-secondary" style="height: 40px; margin-left: 10px; margin-top: -5px;" type="submit">Submit</button>
+                                </div>
+                            </form>
+                    `;
+            }
+
             const resetTotals = async(e) => {
                 const re_set = confirm(`Are you sure you'd like to reset totals? If you confirm, all teams' logged-in users, running totals, final bets, last-question-answered values, and chats will reset to their original values.`);
                 if(re_set){
@@ -142,6 +203,8 @@
             retrieve.addEventListener('click', updateUI);
             reset.addEventListener('click', resetTotals);
             standings.addEventListener('click', showStandings);
+            update.addEventListener('click', updateScores);
+            btn.addEventListener('click', selectTeam);
             //openChat.addEventListener('click', open_chat);
 
         </script>

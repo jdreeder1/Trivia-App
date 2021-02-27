@@ -4,6 +4,15 @@ body {
     padding: 0;
     color: white;
     background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);
+    text-shadow:
+        0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
 }
 .logo {
     font-family: 'Modak', cursive;
