@@ -110,6 +110,12 @@
                 else if('<%= correctAnswer %>' == 'd'){
                     right_answer.innerText =  '<%= choices[3] %>';       
                 }
+                else if('<%= correctAnswer %>' == 't'){
+                    right_answer.innerText =  'True';       
+                }
+                else if('<%= correctAnswer %>' == 'f'){
+                    right_answer.innerText =  'False';       
+                }
             }
 
             window.addEventListener('load', changeBG);

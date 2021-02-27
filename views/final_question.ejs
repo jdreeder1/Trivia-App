@@ -7,9 +7,20 @@
         <link href="/styles/index_styles.css" rel="stylesheet" type="text/css"/>
         <link href="/styles/nav_styles.css" rel="stylesheet" type="text/css"/>
         <style>
+           form > *:last-child {
+               margin-top: 10vh;
+           }
+           @media only screen and (min-height: 800px) and (min-width: 1000px) {
+                .question_form > div {
+                    margin-top: -15vh;
+                }
+                form > *:last-child {
+                    margin-top: 0vh;
+                }
+            }
             @media only screen and (max-width: 1100px) and (min-width: 750px){
             .question_form {
-                margin-top: -20vh;    
+                margin-top: -15vh;    
                 }
             }
         </style>
@@ -43,9 +54,9 @@
                         <h1> <%= team %> </h1>
                         <h2 class="question_number"> Question <%= question_num %></h2>
                         <h3 class="question_body"> <%= questions.q %> </h3>
-                    </div>            
+                    </div> 
                     <form method="post" action="/final_answer">
-                    <div class="question_form">
+                        <div class="question_form">           
                         <div class="row1"><input id="choice1" type="radio" name="answer" value="a"/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
                         <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><label for="choice2" id="option2"><%= questions.option2 %></label></div>
                         <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><label for="choice3" id="option3"><%= questions.option3 %></label></div>
@@ -54,6 +65,7 @@
                     <input type="hidden" name="teamName" value="<%= team %>"/> <input type="hidden" name="userType" value="<%= typeOfUser %>" /> &nbsp; 
                     <input type="hidden" name="question_num" value="<%= question_num %>"/>
                     <input class="sub" type="submit" value="Submit"/>
+                    </form>
             </section>
         </main>
 

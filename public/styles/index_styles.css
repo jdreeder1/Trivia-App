@@ -73,7 +73,7 @@ body {
     }
 }
 
-@media only screen and (max-height: 850px){
+@media only screen and (max-height: 850px) and (max-width: 750px) {
     body{
         font-size: 0.85em;
     }

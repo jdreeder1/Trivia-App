@@ -56,7 +56,6 @@
             const right_answer = document.querySelector('.right_answer');
 
             const verifyUser = () => {
-                console.log('<%= user %>', '<%= team %>');
                 if( '<%= user %>' == 'player'){
                     next_question.style.display = 'none';
                     correct.style.display = 'none';
@@ -105,6 +104,12 @@
                 }
                 else if('<%= correctAnswer %>' == 'd'){
                     right_answer.innerText =  '<%= choices[3] %>';       
+                }
+                else if('<%= correctAnswer %>' == 't'){
+                    right_answer.innerText =  'True';       
+                }
+                else if('<%= correctAnswer %>' == 'f'){
+                    right_answer.innerText =  'False';       
                 }
             }
 
