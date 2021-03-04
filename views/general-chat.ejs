@@ -94,6 +94,12 @@
 
         join.addEventListener('click', joinChat);
         send.addEventListener('click', sendMsg);
+        message.addEventListener('focus', () => {
+            chat_foot.style.opacity = '1';
+        })
+        message.addEventListener('blur', () => {
+            chat_foot.style.opacity = '0.4';
+        })
         window.addEventListener('keydown', (e) => {
             e.which === 13 ? sendMsg() : -1;
         });

@@ -27,9 +27,10 @@ section {
     width: 100%;
 }
 
-@media(max-width: 850px) {
+@media only screen and (max-height: 850px) and (max-width: 650px) {
     main {
-        grid-template-columns: 1fr 3fr 1fr;
-        grid-template-rows: 1fr 3fr 1fr;   
+        margin-top: 10vh;
+        grid-template-columns: 5vw 90vw 5vw;
+        grid-template-rows: repeat(3, auto);   
     }
 }

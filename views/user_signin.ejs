@@ -25,7 +25,8 @@
                     <label for='pw'>Enter your password:</label>
                     <input type='password' name='pw' required>
                     <label for='theme'>Pick background:</label>
-                    <select class="color_choice" name='theme'>
+                    <select class="color_choice" name='theme' required>
+                        <option value='' selected></option>
                         <option value='space'>Space</option>
                         <option value='desert'>Desert</option>
                         <option value='autumn'>Autumn</option>
@@ -34,8 +35,8 @@
                         <option value='city'>City</option>
                     </select>
                     <div class="buttons">
-                        <button id="pick_theme" onclick="changeBG();">Pick Background</button>
-                        <input type='submit' id='sub' name='sub' value='Submit' onsubmit='return Client.handleTeams();'>
+                        <!--<button id="pick_theme" onclick="changeBG();">Pick Background</button>-->
+                        <input type='submit' id='sub' name='sub' value='Submit'>
                     </div>			
                 </form>
             </section>
@@ -73,6 +74,8 @@
                         localStorage.setItem("userBG", "city");
                     }
                 };
+
+                color_choice.addEventListener('change', changeBG);
         
             </script>
 

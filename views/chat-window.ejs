@@ -12,7 +12,7 @@
                 background: none!important;
                 border: none;
                 padding: 0!important;
-                font-family: 'Comic Sans', cursive;
+                font-family: 'Comic Sans MS', 'Marker Felt', sans-serif;
                 font-size: 1.05em;
                 /*optional
                 font-family: arial, sans-serif;
@@ -80,6 +80,7 @@
         const general_chat = document.querySelector('.general_chat');
         const chat = document.querySelector('.chat');
         const title = document.querySelector('.title');
+        const chat_foot = document.getElementById('chat_foot');
 
         const hideChat = () => {
             team_chat.style.display = 'none';
@@ -148,6 +149,12 @@
 
         join.addEventListener('click', joinChat);
         send.addEventListener('click', sendMsg);
+        message.addEventListener('focus', () => {
+            chat_foot.style.opacity = '1';
+        })
+        message.addEventListener('blur', () => {
+            chat_foot.style.opacity = '0.4';
+        })
         //general_chat.addEventListener('click', open_chat);
         window.addEventListener('keydown', (e) => {
             e.which === 13 ? sendMsg() : -1;

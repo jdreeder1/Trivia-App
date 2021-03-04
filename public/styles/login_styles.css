@@ -4,6 +4,10 @@ body {
     color: white;
     background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);
 }
+input, button {
+    width: 100%;
+    font-size: 00.9em;
+}
 .logo {
     width: 100%;
     background: none;
@@ -17,6 +21,9 @@ body {
 }
 
 @media only screen and (max-width: 1200px){
+    button {
+        width: 100%;
+    }
     .acctCreate input, .acctLogin input {
         width: 100%;
         font-size: 1.25em;
@@ -34,7 +41,19 @@ body {
         align-items: center;
     } 
     .acctLogin {
-        margin-top: -10vh;
+        text-align: center;
+        display: grid;
+        grid-template-rows: repeat(3, auto);
+        gap: 2%;
+        align-items: center;
+        justify-content: center;
+    }
+    .userLogin, .adminLogin {
+        border-radius: 20px;
+        width: 50vw;
+        font-size: 00.9em;
+        height: 40px;
+        margin: 0;
     }
 }
 
@@ -44,5 +63,27 @@ body {
         grid-template-columns: 5vw 90vw 5vw;
         justify-content: center;
         align-items: center;
+    }
+}
+
+@media only screen and (max-height: 720px){
+    .logo {
+        font-size: 4em;
+    }
+    .acctLogin {
+        margin-top: -10vh;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+    .userLogin, .adminLogin {
+        border-radius: 20px;
+        width: 40vw;
+        font-size: 00.9em;
+        height: 40px;
+        margin: 0;
+    }
+    .loginSection {
+        display: none;
     }
 }

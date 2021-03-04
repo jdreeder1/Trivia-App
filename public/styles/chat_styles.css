@@ -15,18 +15,36 @@ main {
 #chat_foot {
     position: fixed;
     bottom: 5vh;
-    left: 40vw;
-    opacity: 0.5;
-    transition: 200ms ease-in-out;
+    width: 100%;
 }
-#chat_foot:hover {
-    opacity: 1;
-}
-#chat_foot:focus {
-    opacity: 1;
+#send {
+    height: 45px; 
+    width: 5vw;
+    border-radius: 10px;
+    background-color: white;
+    color: black;
+    font-size: 1.2em; 
 }
 #message {
-    width: 20vw;   
+    width: 40vw; 
+    font-size: 1.2em;
+    height: 40px; 
+    margin-left: 17.5vw; 
+}
+
+@media only screen and (max-width: 1200px){
+    #send {
+        width: 80px;
+    }
+}
+@media only screen and (max-width: 600px) and (max-height: 825px){
+    #send {
+        width: 80px;
+    }
+    #message {
+        width: calc(100vw - 160px);
+        margin-left: 0;
+    }
 }
 
 /**/

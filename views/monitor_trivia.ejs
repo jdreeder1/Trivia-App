@@ -82,14 +82,27 @@
                     const resp = await res.text();
                     try {
                         let parsed = JSON.parse(resp);
+                        let categ = parsed.pop();
+                        console.log(categ);
                         let fragment = document.createDocumentFragment(); 
                         for(let x of parsed){
                             i=1;
-                            let para = document.createElement('p');
-                            para.innerText = `${x.question}: ${x.q} Correct: ${x.correct} A: ${x.option1} B: ${x.option2} C: ${x.option3} D: ${x.option4}`;
-                            fragment.appendChild(para);
+                            let para;
+                            if(typeof x.question == 'undefined'){
+                                para = document.createElement('br');
+                                fragment.appendChild(para);
+                            }
+                            else {
+                                para = document.createElement('p');
+                                para.innerText = `${x.question}: ${x.q} Correct: ${x.correct} A: ${x.option1} B: ${x.option2} C: ${x.option3} D: ${x.option4}`;
+                                fragment.appendChild(para);
+                            }
                             i++
                         }
+                        let pg = document.createElement('p');
+                        pg.innerText = `Final Question Category: ${categ}`;
+
+                        fragment.appendChild(pg);
                         answers.appendChild(fragment);
                     }
                     catch(err){
@@ -195,17 +208,12 @@
                 answers.innerHTML = '';
                 results.innerHTML = '';
             };
-/*
-            const open_chat = async(e) => {
-                window.open('/admin_chat', '_blank');
-            };
-*/
+
             retrieve.addEventListener('click', updateUI);
             reset.addEventListener('click', resetTotals);
             standings.addEventListener('click', showStandings);
             update.addEventListener('click', updateScores);
             btn.addEventListener('click', selectTeam);
-            //openChat.addEventListener('click', open_chat);
 
         </script>
     

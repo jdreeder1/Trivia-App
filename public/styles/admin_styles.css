@@ -1,8 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #020102;
-
+    background: #e12b2e;
 }
 .logo {
     width: 100%;
@@ -14,23 +13,69 @@ body {
     display: grid;
     color: white;
     background: -webkit-linear-gradient(top, #020102 1%,#e12b2e 100%);
-    grid-template-rows: 20vh 2vh 30vh 20vh;
-    grid-template-columns: 40vw 20vw 40vw;
+    grid-template-rows: 20vh auto auto;
+    grid-template-columns: 30vw 40vw 30vw;
     justify-content: center;
     align-items: center;
-    border: solid 5px black;
+    font-size: 1.2em;
 }
 .error {
     grid-row: 1;
     grid-column: 2;
 }
 .adminLogin {
-    grid-row: 2;
+    grid-row: 1;
     grid-column: 2;
-    text-align: left;
+    text-align: center;
 }
 .admin_signin {
     grid-row: 3;
     grid-column: 2;
     text-align: left;
+    display: grid;
+    grid-template-rows: repeat(4, auto);
+    font-size: 1.2em;
+}
+.admin_signin > label {
+    font-size: 1.2em;
+}
+.admin_signin > input, .admin_signin > select {
+    height: 40px;
+    font-size: 1.2em;
+}
+
+@media only screen and (max-width: 922px){
+    .container {
+        display: grid;
+        grid-template-rows: repeat(4, auto);
+        grid-template-columns: 5vw 90vw 5vw;
+    }
+    .admin_signin {
+        grid-column: 2;
+    }
+    .admin_signin > input, .admin_signin > select {
+        width: 100%;
+    }    
+}
+@media only screen and (max-height: 700px){
+    body {
+        font-size: 0.8em;
+    }
+    .logo {
+        font-size: 4em;
+    }
+    .container {
+        display: grid;
+        grid-template-rows: repeat(4, auto);
+        grid-template-columns: 5vw 90vw 5vw;
+    }
+    .adminLogin {
+        display: none;
+    }
+    .admin_signin {
+        grid-column: 2;
+    }
+    .admin_signin > input, .admin_signin > select {
+        width: 100%;
+    }
 }

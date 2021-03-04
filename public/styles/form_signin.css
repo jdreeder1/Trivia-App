@@ -38,9 +38,15 @@ label {
 input[type='email'], input[type='password'], select {
     grid-column: 2;
     height: 30px;
+    font-size: 0.9em;
+}
+
+select {
+    height: 40px;
 }
 
 .buttons {
+    margin-top: 10vh;
     display: grid;
     grid-gap: 20px;
     width: 200%;
@@ -54,6 +60,7 @@ input[type='email'], input[type='password'], select {
 
 #sub {
     grid-column: 2;
+    font-size: 0.9em;
 }
 
 @media only screen and (max-width: 1200px) {
@@ -76,9 +83,13 @@ input[type='email'], input[type='password'], select {
         grid-column: 2;
         width: 100%;
     }
-    input[type='email'], input[type='password'], select {
+    input[type='email'], input[type='password'] {
         grid-column: 2;
         height: 30px;
+        width: 100%;
+    }
+    select {
+        height: 40px;
         width: 100%;
     }
     .buttons {

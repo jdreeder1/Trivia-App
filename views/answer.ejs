@@ -9,26 +9,18 @@
         <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     </head>
     <body>
-        <!--
-        <header>
-            <div class="logo">
-                Woody's Trivia
-            </div>
-        </header>
-    -->
     <main>
         <section>
             <% if (already_answered) { %>
                 <div class="error"> <%= already_answered %> </div>
             <% } %>
-            <h1>Team: </h1>
+            <h3>Team: </h3>
             <h2 class="team_name"><%= team %></h2>
-            <h1>Answer: </h1>
-            <h2 class="correct"> <%= correctAnswer %> &nbsp; <span class="right_answer"></span>
-            </h2>
-            <h1>Guess: </h1>
-            <h2> <%= guessedAnswer %></h2>
-            <h1>Wager: </h1>
+            <h3>Answer: </h3>
+            <h2 class="correct"></h2>
+            <h3>Guess: </h3>
+            <h2 class="guessed"></h2>
+            <h3>Wager: </h3>
             <h2> <%= points %></h2>
             <h3> <%= result %></h3>
 
@@ -53,7 +45,7 @@
             const checkAnswer = document.querySelector('.checkAnswer');
             const teamName = document.querySelector('.team_name');
             const correct = document.querySelector('.correct');
-            const right_answer = document.querySelector('.right_answer');
+            const guessed = document.querySelector('.guessed');
 
             const verifyUser = () => {
                 if( '<%= user %>' == 'player'){
@@ -92,29 +84,31 @@
                 }
             };
 
-            const showRightAnswer = () => {
-                if('<%= correctAnswer %>' == 'a'){ 
-                   right_answer.innerText =  '<%= choices[0] %>';
+            const formatAnswer = (ans, spn) => {
+                if(ans == 'a'){ 
+                   spn.innerText =  `A.) <%= choices[0] %>`;
                 }
-                else if('<%= correctAnswer %>' == 'b'){
-                    right_answer.innerText =  '<%= choices[1] %>';
+                else if(ans == 'b'){
+                    spn.innerText =  `B.) <%= choices[1] %>`;
                 }
-                else if('<%= correctAnswer %>' == 'c'){
-                    right_answer.innerText =  '<%= choices[2] %>';
+                else if(ans == 'c'){
+                    spn.innerText =  `C.) <%= choices[2] %>`;
                 }
-                else if('<%= correctAnswer %>' == 'd'){
-                    right_answer.innerText =  '<%= choices[3] %>';       
+                else if(ans == 'd'){
+                    spn.innerText =  `D.) <%= choices[3] %>`;       
                 }
-                else if('<%= correctAnswer %>' == 't'){
-                    right_answer.innerText =  'True';       
+                else if(ans == 't'){
+                    spn.innerText =  'True';       
                 }
-                else if('<%= correctAnswer %>' == 'f'){
-                    right_answer.innerText =  'False';       
+                else if(ans == 'f'){
+                    spn.innerText =  'False';       
                 }
             }
 
+            formatAnswer('<%= correctAnswer %>', correct);
+            formatAnswer('<%= guessedAnswer %>', guessed);
             window.addEventListener('load', changeBG);
-            window.addEventListener('load', showRightAnswer);
+            //window.addEventListener('load', showRightAnswer);
         </script>
     </body>
 </html>

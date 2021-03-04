@@ -72,7 +72,7 @@
             //which gives you the object’s Unix timestamp represented as microseconds since the epoch.
             const difference = +new Date("<%= startInfo %>") - +new Date();
             let remaining = `<form method="post" action="/questions">
-                                <button type="submit">Play Trivia</button>
+                                <button type="submit" style="border-radius: 20px; width: 120px; height: 40px; cursor: pointer;">Play Trivia</button>
                             </form>`;
 
             if (difference > 0) {

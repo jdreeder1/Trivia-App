@@ -433,7 +433,7 @@ const findOneQuestion = async (client, question) => {
 const updateStartTime = async(client, dt, time) => {
     let result = await client.db("woodys_trivia").collection("questions")
                     .updateOne(
-                        {event: 'trivia'},
+                        {event: "trivia"},
                         {$set: {startDate: dt, startTime: time}},
                         {upsert: true}
                     );
@@ -441,6 +441,19 @@ const updateStartTime = async(client, dt, time) => {
     console.log(`${result.matchedCount} document(s) matched the query criteria. Start time updated.`);     
 
 };
+
+const updateCategory = async(client, category) => {
+    let result = await client.db("woodys_trivia").collection("admin_login")
+                    .updateOne(
+                            {purpose: "chat"},
+                            {$set:
+                                {final_category: category} 
+                            },
+                            {upsert: true}
+                        );
+
+        console.log(`${result.matchedCount} document(s) matched the query criteria.`);      
+}
 
 const updateAllListingsToHavePropertyType = async(client, q_number, q_data) => {
 
@@ -632,40 +645,11 @@ const getAllTeamScores = async(client) => {
 
 app.post('/post_qs', async (req, res) => {
     let data = req.body;
-    /*
-    let timeArr = data.start_date.split('T');
-    let dt = timeArr[0].toString().split('-');
-    let time = timeArr[1];
-    console.log(`Date: ${dt}, Time: ${time}`);
-
-    let yr = Number(dt[0]);
-    let mo = Number(dt[1]);
-    let day = Number(dt[2]);
-    let newDt = `${yr}-${mo}-${day}`;
+    let category = data.category;
     
-    let timeStart = '19:00';
-    */
-    //let newDt = `${data.start_date}T${data.start_time}`
-    //new Date( Date.parse('2012-01-26T13:51:50.417-07:00') )
     let newDt = new Date(Date.parse(`${data.start_date}`));
     
     console.log(newDt);
-    //let stDt = newDate.toDateString();
-/*
-    let date = new Date();
-    //let today = dt.toDateString();
-
-    if(date<newDate){
-    console.log('too early! log in later!');
-    }
-    else {
-    console.log('you can login now!');
-    }
-*/
-
-    /*let d = new Date();
-    let currDate = d.toDateString();
-    let currentDate = d.toLocaleTimeString();*/
 
     let question1 = {q: data.q1, correct: data.correct1, option1: data.option1_q1, option2: data.option2_q1, option3: data.option3_q1, option4: data.option4_q1};
     let question2 = {q: data.q2, correct: data.correct2, option1: data.option1_q2, option2: data.option2_q2, option3: data.option3_q2, option4: data.option4_q2};
@@ -701,6 +685,9 @@ app.post('/post_qs', async (req, res) => {
         // Connect to the MongoDB cluster
         await client.connect();
         await updateStartTime(client, data.start_date, data.start_time)
+        .then(
+            await updateCategory(client, category)
+        )
         .then(
         await updateAllListingsToHavePropertyType(client, 'q1', question1)
         )
@@ -1237,10 +1224,15 @@ app.get('/get_qs', async(req, res) => {
             await client.connect();
 
             let foundQuestions = await findQuestions(client);
+            let findCategory = await findGeneralChat(client);
+            foundQuestions.push(findCategory.final_category);
             res.json(foundQuestions);
         }    
         catch(err){
             res.send(err);
+        }
+        finally {
+            await client.close();
         }
     }
     else {
@@ -1261,7 +1253,10 @@ app.get('/standings', async(req, res) => {
         catch (err) {
             //console.log(err);
             res.send(err)
-        } 
+        }
+        finally {
+            await client.close();
+        }
     }
     else {
         res.sendStatus(404);
@@ -1323,6 +1318,7 @@ app.get('/wager', async(req, res) => {
     let teamNames = [];
     let teamTotals = [];
     let index;
+    let categ;
 if (req.session.questionNum == questionDataClone.length - 1){       
     const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
 
@@ -1330,6 +1326,7 @@ if (req.session.questionNum == questionDataClone.length - 1){
         // Connect to the MongoDB cluster
         await client.connect();
         let teamScores = await getAllTeamScores(client);
+        categ = await findGeneralChat(client);
 
         if(teamScores){
             for(let teams of teamScores){
@@ -1353,6 +1350,7 @@ if (req.session.questionNum == questionDataClone.length - 1){
 
     res.render('final_wager', {
         typeOfUser: req.session.userDetails.userType,
+        category: categ.final_category,
         team: req.session.userDetails.triviaTeam,
         teamScore: teamTotals[index],
         teamNames: teamNames,
@@ -1417,7 +1415,6 @@ app.get('/scores', async(req, res) => {
 });
 
 app.post('/get_answer', async(req, res) => {
-
     const guess = req.body.answer;
     const confidence = Number(req.body.confidence); 
     const team_name = req.body.teamName;

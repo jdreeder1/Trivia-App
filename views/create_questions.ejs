@@ -512,6 +512,9 @@
                 C<input type='text' name='option3_q25' class='answer answer3 input-group-text'>
                 D<input type='text' name='option4_q25' class='answer answer4 input-group-text'>
                 </div>
+                <br>
+                <p>Final Question Category</p>
+                <input type="text" class=" category form-control" name="category" required/>
                 <br><br>
             <!--onsubmit="return Client.handleSubmit();"-->
             <input type="submit" class="btn btn-success" name="sub" id="sub" value="Submit Questions/Answers" >
@@ -528,6 +531,7 @@
             const correct = document.querySelectorAll(".correct");
             const start_date = document.getElementById('start_date');
             const start_time = document.getElementById('start_time');
+            const category = document.querySelector('.category');
 
             const showTime = () => {
                 //console.log(start_date.value);
@@ -555,6 +559,8 @@
                         console.log(resp);
                         //console.log(JSON.parse(resp));
                         let parsed = JSON.parse(resp);
+                        category.value = parsed.pop();
+                        
                         questions.forEach((question, i=0) => {
                             question.value = parsed[i].q;
                             i++;

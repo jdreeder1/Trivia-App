@@ -31,16 +31,16 @@
     </div>  
         <section class="question">
             <div class="question_content">
-                <h1> <%= team %> </h1>
-                <h2 class="question_number"> Question <%= question_num %></h2>
+                <h3 class="trivia_team"> <%= team %> </h3>
+                <h3 class="question_number"> <i>Question <%= question_num %> </i></h3>
                 <h3 class="question_body"> <%= questions.q %> </h3>
             </div>            
             <form method="post" action="/get_answer">
             <div class="question_form">
-                <div class="row1"><input id="choice1" type="radio" name="answer" value="a" required/><label for="choice1" id="option1"><%= questions.option1 %></label></div>
-                <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><label for="choice2" id="option2"><%= questions.option2 %></label></div>
-                <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><label for="choice3" id="option3"><%= questions.option3 %></label></div>
-                <div class="row4"><input id="choice4" type="radio" name="answer" value="d"/><label for="choice4" id="option4"><%= questions.option4 %></label></div>
+                <div class="row1"><input id="choice1" type="radio" name="answer" value="a" required/><span id="letter1" name="letter" value="A.)">A.) </span><label for="choice1" id="option1"><%= questions.option1 %></label></div>
+                <div class="row2"><input id="choice2" type="radio" name="answer" value="b"/><span id="letter2" name="letter" value="B.)">B.) </span><label for="choice2" id="option2"><%= questions.option2 %></label></div>
+                <div class="row3"><input id="choice3" type="radio" name="answer" value="c"/><span id="letter3" name="letter" value="C.)">C.) </span><label for="choice3" id="option3"><%= questions.option3 %></label></div>
+                <div class="row4"><input id="choice4" type="radio" name="answer" value="d"/><span id="letter4" name="letter" value="D.)">D.) </span><label for="choice4" id="option4"><%= questions.option4 %></label></div>
             </div>
             <div class="form_foot">    
                 <label for="confidence">Confidence</label>
@@ -81,6 +81,10 @@
         const get_score = document.querySelector('.get_score');
         const menu = document.querySelector('.menu');
         const title = document.querySelector('.title');
+        const letter1 = document.getElementById('letter1');
+        const letter2 = document.getElementById('letter2');
+        const letter3 = document.getElementById('letter3');
+        const letter4 = document.getElementById('letter4');
 
         const changeBG = () => {
             let userChoice = localStorage.getItem('userBG') ;
@@ -134,6 +138,10 @@
                         choice4.style.display = 'none';
                         option1.innerText = 'True';
                         option2.innerText = 'False';
+                        letter1.innerText = '';
+                        letter2.innerText = '';
+                        letter3.innerText = '';
+                        letter4.innerText = '';
                     }
             };
 
