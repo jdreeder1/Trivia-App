@@ -24,6 +24,8 @@ main {
     background-color: white;
     color: black;
     font-size: 1.2em; 
+    z-index: 1;
+    cursor: pointer;
 }
 #message {
     width: 40vw; 

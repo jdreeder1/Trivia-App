@@ -41,6 +41,10 @@ input[type='email'], input[type='password'], select {
     font-size: 0.9em;
 }
 
+input[type="submit"]{
+    cursor: pointer;
+}
+
 select {
     height: 40px;
 }

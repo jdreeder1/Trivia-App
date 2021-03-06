@@ -14,6 +14,14 @@ body {
         0.05em -0.05em black,
         0.05em 0.05em black;
 }
+button, a, input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+input[type="submit"]{
+    cursor: pointer;
+}
 .logo {
     font-family: 'Modak', cursive;
     font-size: 4em;

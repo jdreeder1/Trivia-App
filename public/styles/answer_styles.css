@@ -27,6 +27,10 @@ section {
     width: 100%;
 }
 
+input[type="submit"]{
+    cursor: pointer;
+}
+
 @media only screen and (max-height: 850px) and (max-width: 650px) {
     main {
         margin-top: 10vh;

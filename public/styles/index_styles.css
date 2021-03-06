@@ -50,6 +50,7 @@ body {
 }
 .sub {
     grid-column: 3;
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 1200px){

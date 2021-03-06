@@ -18,6 +18,10 @@ section {
     grid-column: 2;
 }
 
+button {
+    cursor: pointer;
+}
+
 .final_q {
     font-size: 4em;
 }
