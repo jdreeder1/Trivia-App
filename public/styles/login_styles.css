@@ -21,6 +21,7 @@ input, button {
 }
 .subAcct, .userLogin, .adminLogin {
     cursor: pointer;
+    background-color: rgba(235, 235, 235, 1);
 }
 
 @media only screen and (max-width: 1200px){

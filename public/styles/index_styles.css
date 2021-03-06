@@ -15,6 +15,10 @@ body {
         0.05em -0.05em black,
         0.05em 0.05em black;
 }
+button, input[type="submit"] {
+    cursor: pointer;
+    background-color: rgba(235, 235, 235, 1);
+}
 .question {
     margin-top: 10vh;
     display: grid;

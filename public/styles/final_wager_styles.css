@@ -18,8 +18,9 @@ section {
     grid-column: 2;
 }
 
-button {
+button, input[type="submit"] {
     cursor: pointer;
+    background-color: rgba(235, 235, 235, 1);
 }
 
 .final_q {
