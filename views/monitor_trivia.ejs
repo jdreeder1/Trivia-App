@@ -11,6 +11,13 @@
             body {
                 max-width: 100%; overflow-x: hidden; 
             }
+            .navRow {
+                font-size: 2em;
+                position: fixed;
+                right: 5vw;
+                top: 10vh;
+                cursor: pointer;  
+            } 
             .row {
                 height: 10vh;
             }
@@ -35,14 +42,20 @@
                     <button type="submit" class="reset btn btn-outline-secondary">Reset Totals</button>
                 </form>
                     <button type="submit" class="standings btn btn-outline-secondary">Show Standings</button>
-                <form method="get" action="/">
-                    <button type="submit" class="btn btn-outline-secondary"> <i class="bi bi-house"></i></button>
-                </form>
+                    <button type="submit" class="captain btn btn-outline-secondary">Update Captains</button>
                 <form class="chat" method="post" action="/general_chat" target="_blank">
                     <button class="open_chat btn btn-outline-secondary" type="submit">Open Chat</button>
                     <input type="hidden" name="userName" value="Admin"/>
                 </form>
               </nav>
+    <div class="navRow">
+        <form method="get" action="/">
+            <button type="submit" class="btn btn-outline-secondary"> <i class="bi bi-house"></i></button>
+        </form>
+        <form method="post" action="/admin_home">
+            <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-arrow-left-square"></i></button>
+        </form>
+    </div>
         <div class="row"></div>
         <div class="row align-top">
             <div class="col-md-4">
@@ -55,7 +68,7 @@
         <div class="row row1">
             <div class="col-md-3"></div>
             <div class="col-md-6">
-                <h3 id="intro">Welcome, admin! Would you like to Pull Answers, Reset Totals, Show Standings or Open Chat?</h3>
+                <h3 id="intro">Welcome, admin! Would you like to Pull Answers, Update Scores, Reset Totals, Show Standings, Update Captains or Open Chat?</h3>
             </div>
         </div>       
         <script>
@@ -68,9 +81,11 @@
             const results = document.querySelector('.results');
             const standings = document.querySelector('.standings');
             const update = document.querySelector('.update');
-            const selectList = document.createElement('select');
+            const captain = document.querySelector('.captain');
+            let selectList = document.createElement('select');
             selectList.id = 'mySelect';
-            const btn = document.createElement('button');
+            let buttn = document.createElement('button');
+            let btn2 = document.createElement('button');
             let teamInfo = [];
             
 
@@ -83,7 +98,6 @@
                     try {
                         let parsed = JSON.parse(resp);
                         let categ = parsed.pop();
-                        console.log(categ);
                         let fragment = document.createDocumentFragment(); 
                         for(let x of parsed){
                             i=1;
@@ -122,8 +136,11 @@
                     const resp = await res.text();
                     try {
                         let parsed = JSON.parse(resp);
+                        let newArr = parsed.sort((a, b) => (Number(a.runningTotal) < Number(b.runningTotal)) ? 1: -1);
+                        //console.log(parsed);
+
                         let fragment = document.createDocumentFragment();
-                        for(let x of parsed){
+                        for(let x of newArr){
                             let para = document.createElement('p');
                             para.innerText = `${x.teamName} - Points: ${x.runningTotal} Last Question Answered: ${x.lastQuestionAnswered}`;
                             fragment.appendChild(para);
@@ -139,7 +156,16 @@
                 }
             }
 
-            const updateScores = async() => {
+            const buttonSelect = (b) => {
+                b.setAttribute('type', 'submit');
+                b.setAttribute('class', 'subTeam btn btn-outline-secondary');
+                b.innerText = 'Pick Team';
+                answers.appendChild(b);
+            }
+
+            const updateScores = async(e) => {
+                //console.log(e.currentTarget.classList);
+                let currTarget =  e.currentTarget.classList;
                 hide_intro(); hide_body(); 
                 const res = await fetch(`/standings`);
                 try {
@@ -147,10 +173,6 @@
                     const resp = await res.text();
                     try {
                         teamInfo = JSON.parse(resp);
-                        //let fragment = document.createDocumentFragment();
-                        btn.setAttribute('type', 'submit');
-                        btn.setAttribute('class', 'subTeam btn btn-outline-secondary');
-                        btn.innerText = 'Pick Team';
 
                         selectList.innerHTML = '';
                         
@@ -161,7 +183,12 @@
                             selectList.appendChild(option);
                         }
                         answers.appendChild(selectList);
-                        answers.appendChild(btn);
+                        if(currTarget.contains('update')){
+                            buttonSelect(buttn);
+                        }
+                        else {
+                            buttonSelect(btn2);
+                        }
                         
                     }
                     catch(err){
@@ -172,20 +199,33 @@
                     console.log(error);
                 }
 
-            }
+            }  
 
             const selectTeam = () => {
                     let pickedTeam = mySelect.options[mySelect.selectedIndex].value;
-
-                    console.log(pickedTeam);
 
                     answers.innerHTML = `
                     <h4>${teamInfo[pickedTeam].teamName}'s current score is ${teamInfo[pickedTeam].runningTotal}. How much you like to add or subtract from their score?</h4>
                             <form method="post" action="adjust_points" style="margin-top: 40px;">
                                 <div style="display: inline-block;">
-                                    <input type="number" style="height: 40px;" class="adjustPoints" name="points" min="-${teamInfo[pickedTeam].runningTotal}" max="${teamInfo[pickedTeam].runningTotal}">
+                                    <input type="number" style="height: 40px;" class="adjustPoints" name="points" min="-${teamInfo[pickedTeam].runningTotal}" max="${teamInfo[pickedTeam].runningTotal}" required />
                                     <input type="hidden" name="team" value="${teamInfo[pickedTeam].teamName}"/>
-                                    <button class="btn btn-outline-secondary" style="height: 40px; margin-left: 10px; margin-top: -5px;" type="submit">Submit</button>
+                                    <button class="buttn btn btn-outline-secondary" style="height: 40px; margin-left: 10px; margin-top: -5px;" type="submit">Submit</button>
+                                </div>
+                            </form>
+                    `;
+            }
+
+            const selectTeamCap = (e) => {
+                    let pickedTeam = mySelect.options[mySelect.selectedIndex].value;
+
+                    answers.innerHTML = `
+                    <h4>${teamInfo[pickedTeam].teamName}'s current team captain is ${teamInfo[pickedTeam].captain}. Type the new team captain's email below: </h4>
+                            <form method="post" action="adjust_captain" style="margin-top: 40px;">
+                                <div style="display: inline-block;">
+                                    <input type="email" style="height: 40px;" class="adjustCaptain" name="email" required/>
+                                    <input type="hidden" name="team" value="${teamInfo[pickedTeam].teamName}"/>
+                                    <button class="btn2 btn btn-outline-secondary" style="height: 40px; margin-left: 10px; margin-top: -5px;" type="submit">Submit</button>
                                 </div>
                             </form>
                     `;
@@ -213,7 +253,9 @@
             reset.addEventListener('click', resetTotals);
             standings.addEventListener('click', showStandings);
             update.addEventListener('click', updateScores);
-            btn.addEventListener('click', selectTeam);
+            captain.addEventListener('click', updateScores);
+            buttn.addEventListener('click', selectTeam);
+            btn2.addEventListener('click', selectTeamCap);
 
         </script>
     

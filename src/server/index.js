@@ -416,20 +416,6 @@ const findAllTeams = async (client) => {
 
 };
 
-const findOneQuestion = async (client, question) => {
-    let result = await client.db("woodys_trivia").collection("questions")
-                        .findOne({ question: question });
-
-    if (result) {
-        //console.log(`Found a listing in the collection with the name '${nameOfListing}':`);
-        //console.log(result);
-        return result;
-    } else {
-        console.log(`No listings found!'`);
-        return false;
-    }
-};
-
 const updateStartTime = async(client, dt, time) => {
     let result = await client.db("woodys_trivia").collection("questions")
                     .updateOne(
@@ -505,20 +491,7 @@ const submitFinalAnswer = async(client, team, answer) => {
         console.log(`${result.matchedCount} document(s) matched the query criteria. Final bet sumbitted.`);     
 
 };
-/*
-const findLoggedInUser = (client, team, user) => {
-    let result = await client.db("woodys_trivia").collection("teams")
-                    .findOne(
-                        {teamName: team, "loggedInUsers.email": user}
-                    );
-        if(result){
-            return result;
-        }
-        else {
-            console.log(`No result found!`);
-        }
-};
-*/
+
 const addLoggedInUser = async(client, team, user) => {
     let result = await client.db("woodys_trivia").collection("teams")
                     .updateOne(
@@ -544,48 +517,25 @@ const updateLoggedInUser = async(client, team, userObj) => {
     }
     else {
         return false;
-        /*
-        let update = await addLoggedInUser(client, team, userObj);
-        if(update){
-            console.log(`Log in successful!`);
-            return true;
-        }
-        else {
-            console.log(`Log in unsuccessful!`);
-        }
-        */
     }
 
 };
 
-const findTeamAnswer = async(client, team, q_num) => {
+const adjustTeamCaptain = async(client, team, email) => {
     let result = await client.db("woodys_trivia").collection("teams")
-                    .find(
-                        { $and: [ { teamName: { team } }, { "answers.question": { q_num } } ] } 
-                    );
-    if(result){
-        const results = await result.toArray();
-        //return results;
-        console.log(results);
-    }
-    else {
-        return false;
-    }        
-};
-
-const updateTeamAnswer = async(client, team, guess, q_num) => {
-    let answerObj = {
-        question: q_num,
-        guess: guess
-    };
-        let result = await client.db("woodys_trivia").collection("teams")
                     .updateOne(
-                        {teamName: team},
-                        {$push: { answers: answerObj }}
+                        {teamName: team}, 
+                        {$set:
+                            {captain : email}
+                        },
+                        {upsert: true}
                     );
-        console.log(`${result.matchedCount} document(s) matched the query criteria. Answer updated.`); 
-
-        
+        if(result){                    
+            console.log(`${result.matchedCount} document(s) matched the query criteria. Team captain updated.`);
+        }
+        else{
+            console.log('Error - could not update team captain.');
+        }    
 };
 
 const adjustTeamScore = async(client, team, num_points) => {
@@ -622,9 +572,6 @@ const updateTeamScore = async(client, team, guess, q_num, num_points) => {
             console.log('Error - could not update team score.');
         }
         
-        //await findTeamAnswer (client, team, q_num);
-        
-        //await updateTeamAnswer(client, team, guess, q_num);
 };
 
 const getAllTeamScores = async(client) => {
@@ -886,6 +833,22 @@ app.post('/create_questions', (req, res) => {
 
 app.post('/start_trivia', (req, res) => {
     res.render('monitor_trivia');
+});
+
+app.post('/adjust_captain', async(req, res) => {
+    const {team, email} = req.body;
+    const client = new MongoClient(process.env.MONGO_CONNECT, {useUnifiedTopology: true });
+    try {
+        await client.connect();
+        await adjustTeamCaptain(client, team, email);
+        res.render('monitor_trivia');
+    }
+    catch(error){
+        console.log(error);
+    }
+    finally {
+        await client.close();
+    }
 });
 
 app.post('/adjust_points', async(req, res) => {
